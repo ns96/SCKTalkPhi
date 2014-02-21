@@ -6,11 +6,24 @@
 
 package com.instras.com;
 
+import com.phidgets.PhidgetException;
+import com.phidgets.StepperPhidget;
+import com.phidgets.event.ErrorEvent;
+import com.phidgets.event.ErrorListener;
+import com.phidgets.event.StepperPositionChangeEvent;
+import com.phidgets.event.StepperPositionChangeListener;
+import com.phidgets.event.StepperVelocityChangeEvent;
+import com.phidgets.event.StepperVelocityChangeListener;
+import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author nathan
  */
 public class SCKTalkPhiMain extends javax.swing.JFrame {
+    private StepperPhidget stepperPhidget;
 
     /**
      * Creates new form SCKTalkPhiMain
@@ -38,7 +51,6 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox2 = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
@@ -53,16 +65,26 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jTextField5 = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox();
+        jButton6 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jTextField6 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("SCKTalkPhi v1.0.0 (02/16/2014)");
-        setPreferredSize(new java.awt.Dimension(550, 355));
+        setTitle("SCKTalkPhi v1.0.0 (02/21/2014)");
+        setPreferredSize(new java.awt.Dimension(560, 435));
 
         jButton1.setText("EXIT");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
-        jTextArea1.setText("STEP #, RPM, Dwell Time (s)\n1, 500, 25\n2, 1200, 30\n3, 5000, 30\n5, 100, 10");
+        jTextArea1.setText("STEP #, RPM, Dwell Time (s)\n1, 500, 25\n2, 1200, 30\n3, 5000, 30\n4, 100, 10");
         jScrollPane1.setViewportView(jTextArea1);
 
         jButton2.setText("START");
@@ -78,21 +100,28 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jButton4.setText("DOWN");
 
         jButton5.setText("STOP");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("Current Speed: 0");
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setText("Current Speed:");
 
-        jTextField1.setText("2500");
+        jTextField1.setText("0");
+        jTextField1.setToolTipText("");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
-        jLabel2.setText("GO-TO (RPM)");
-
-        jCheckBox1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jCheckBox1.setForeground(java.awt.Color.red);
-        jCheckBox1.setText("Power-Up Motor");
+        jLabel2.setText("Speed (RPM)");
 
         jCheckBox2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jCheckBox2.setForeground(java.awt.Color.blue);
-        jCheckBox2.setText("Run Step Sequence");
+        jCheckBox2.setText("Run Ramp Sequence");
         jCheckBox2.setToolTipText("");
         jCheckBox2.setActionCommand("");
 
@@ -105,17 +134,18 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
 
         jLabel4.setText("Accelaration");
 
-        jTextField2.setText("16000");
+        jTextField2.setText("5000");
         jTextField2.setToolTipText("");
 
         jLabel5.setText("Current Limit");
 
-        jTextField3.setText("2.0");
+        jTextField3.setText("0.5");
 
         jLabel6.setText("Target Position");
         jLabel6.setToolTipText("");
 
         jTextField4.setText("10000000");
+        jTextField4.setToolTipText("");
 
         jLabel7.setText("Current Position");
 
@@ -144,7 +174,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                     .addComponent(jTextField2)
                     .addComponent(jTextField3)
                     .addComponent(jTextField4)
-                    .addComponent(jComboBox2, 0, 153, Short.MAX_VALUE)))
+                    .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -168,8 +198,28 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 51, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
+
+        jButton6.setText("Connect");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel9.setForeground(java.awt.Color.red);
+        jLabel9.setText("Not Connected");
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel10.setText("0");
+
+        jLabel11.setText("Spin Time (s)");
+
+        jTextField6.setText("0");
+        jTextField6.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -189,18 +239,31 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 209, Short.MAX_VALUE)
                         .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jCheckBox1)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel1)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel11)
+                                            .addGap(40, 40, 40)))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jTextField1)
+                                        .addComponent(jComboBox1, 0, 168, Short.MAX_VALUE)
+                                        .addComponent(jTextField6))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField1)
-                                    .addComponent(jComboBox1, 0, 151, Short.MAX_VALUE)))
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jLabel9)))
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1)
@@ -214,14 +277,21 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jCheckBox2))
+                    .addComponent(jCheckBox2)
+                    .addComponent(jButton6)
+                    .addComponent(jLabel9))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel10))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -246,11 +316,146 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    /**
+     * Method to start the motor
+     * 
+     * @param evt 
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        try {
+            jButton2.setEnabled(false);
+            testMotor();
+        } catch (PhidgetException ex) {
+            Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
+    
+    /**
+     * Exit the program
+     * @param evt 
+     */
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(stepperPhidget != null) {
+            try {
+                stepperPhidget.setEngaged(0, false);
+                stepperPhidget.close();
+            } catch (PhidgetException ex) {
+                Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        System.exit(0);
+    }//GEN-LAST:event_jButton1ActionPerformed
+    
+    /**
+     * Connect to the stepper phidget board
+     * 
+     * @param evt 
+     */
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        if(stepperPhidget != null) {
+            return;
+        }
+        try {
+            stepperPhidget = new StepperPhidget();
+            stepperPhidget.openAny();
+            
+            System.out.println("Waiting for the Phidget Stepper to be attached...\n");
+            stepperPhidget.waitForAttachment();
+            
+            System.out.println("Phidget Information");
+            System.out.println("================================================");
+            System.out.println("Version: " + stepperPhidget.getDeviceVersion());
+            System.out.println("Name: " + stepperPhidget.getDeviceName());
+            System.out.println("Serial #: " + stepperPhidget.getSerialNumber());
+            System.out.println("# Steppers: " + stepperPhidget.getMotorCount());
+            
+            // update the UI label to indicate successful connection
+            jLabel9.setForeground(Color.green);
+            jLabel9.setText("Connected to SCK-200X ...");
+            
+            // add some listeners now
+            stepperPhidget.addErrorListener(new ErrorListener() {
+                public void error(ErrorEvent ex) {
+                    jLabel9.setText("Connection Failed ...");
+                    System.out.println("\n--->Error: " + ex.getException());
+                }
+            });
+            
+            stepperPhidget.addStepperVelocityChangeListener(new StepperVelocityChangeListener() {
+                @Override
+                public void stepperVelocityChanged(StepperVelocityChangeEvent svce) {
+                    int speed = (int)(((svce.getValue()/16.0)/96.0)*60.0);
+                    jLabel10.setText(speed + " rpms");
+                }
+            });
+            
+            stepperPhidget.addStepperPositionChangeListener(new StepperPositionChangeListener() {
+                public void stepperPositionChanged(StepperPositionChangeEvent spce) {
+                    double position = spce.getValue();
+                    jTextField5.setText("" + position);
+                }
+            });
+        } catch (PhidgetException ex) {
+            Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+    
+    /**
+     * Method to stop the motor
+     * @param evt 
+     */
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        try {
+            stepperPhidget.setEngaged(0, false);
+            jLabel10.setText("stopped");
+            jButton2.setEnabled(true);
+        } catch (PhidgetException ex) {
+            Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+    
+    /**
+     * Method to test connection to motor
+     * 
+     * @throws PhidgetException 
+     */
+    private void testMotor() throws PhidgetException {
+        //Set up some initial acceleration and velocity values
+        Long accleration = new Long(jTextField2.getText());
+        stepperPhidget.setAcceleration(0, accleration);
+        
+        double maxVel = stepperPhidget.getVelocityMax(0);
+        stepperPhidget.setVelocityLimit(0, maxVel / 2);
+        //stepperPhidget.setVelocityLimit(0, maxVel);
+        
+        stepperPhidget.setCurrentLimit(0, Double.parseDouble(jTextField3.getText()));
+        
+        System.out.println("max vel: " + maxVel);
+        
+        System.out.println("\nMotor at Position: " + stepperPhidget.getCurrentPosition(0));
+        
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // now move it
+        stepperPhidget.setCurrentPosition(0, 0L);
+        
+        Long targetPosition = new Long(jTextField4.getText());
+        stepperPhidget.setTargetPosition(0, targetPosition);
+        
+        System.out.println("\nEngaging Stepper Motor\n");
+        stepperPhidget.setEngaged(0, true);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -271,11 +476,13 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JButton jButton6;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -283,6 +490,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
@@ -291,5 +499,6 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 }
