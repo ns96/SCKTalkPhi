@@ -31,7 +31,11 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     // this object handle talking to the motor control board
     private StepperPhidget stepperPhidget;
     
-    // The speed to set
+    // The position target to move to. This must be a very big number to 
+    // keep motor turning continuesly
+    private long targetPosition = 10000000L;
+    
+    // The spin speed to set
     private int setSpeed = 3000;
     
     // the time object for count seconds
@@ -165,7 +169,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel1.setText("Current Speed");
+        jLabel1.setText("Spin Speed");
         jLabel1.setToolTipText("");
 
         jTextField1.setText("3000");
@@ -187,8 +191,9 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jLabel3.setText("Step Increment (rpm)");
         jLabel3.setToolTipText("");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "10", "20", "50", "100", "200", "500" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "10", "20", "50", "100" }));
         jComboBox1.setSelectedIndex(1);
+        jComboBox1.setToolTipText("");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Advance Settings"));
 
@@ -199,7 +204,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
 
         jLabel5.setText("Current Limit");
 
-        jTextField3.setText("0.5");
+        jTextField3.setText("1.0");
         jTextField3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField3ActionPerformed(evt);
@@ -221,6 +226,11 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jLabel8.setToolTipText("");
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Clockwise", "Counter Clockwise" }));
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
 
         jLabel15.setText("Max Speed");
 
@@ -307,7 +317,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTextArea2);
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel12.setText("Current Time");
+        jLabel12.setText("Spin Time");
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel13.setForeground(java.awt.Color.blue);
@@ -428,9 +438,6 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             Long accleration = new Long(jTextField2.getText());
             stepperPhidget.setAcceleration(0, accleration);
             
-            // set the speed now
-            jTextField1ActionPerformed(null);
-            
             // set the current limit
             stepperPhidget.setCurrentLimit(0, Double.parseDouble(jTextField3.getText()));
             
@@ -445,9 +452,12 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             jTextField6ActionPerformed(null);
             spinTimer.start();
             
-            // set power to the motor now
+            // power-up the motor now
             System.out.println("\nEngaging Stepper Motor\n");
             stepperPhidget.setEngaged(0, true);
+            
+            // set the speed now
+            jTextField1ActionPerformed(null);
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -529,13 +539,45 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     
     /**
      * Set the current motor speed
+     * 
      * @param evt 
      */
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         try {
-            setSpeed = Integer.parseInt(jTextField1.getText());
-            setMotorSpeed();
-        } catch(NumberFormatException nfe) { }
+            int changeBy = 50; // how much to change the speed by
+                    
+            int newSpeed = Integer.parseInt(jTextField1.getText());
+            
+            if(newSpeed >= setSpeed) {
+                /* we need to increate is steps of 100 rpms
+                int diff = newSpeed- setSpeed;
+                while (setSpeed < newSpeed && diff > changeBy) {
+                    setSpeed += changeBy;
+                    setMotorSpeed();
+                    
+                    // pause a bit before increasing speed again
+                    Thread.sleep(50);
+                }*/
+                
+                setSpeed = newSpeed;
+                setMotorSpeed();
+            } else {
+                // we need to decrese is steps of 100 rpms
+                int diff = setSpeed - newSpeed;
+                while (setSpeed > newSpeed && diff > changeBy) {
+                    setSpeed -= changeBy;
+                    setMotorSpeed();
+                    
+                    // pause a bit before increasing speed again
+                    Thread.sleep(50);
+                }
+                
+                setSpeed = newSpeed;
+                setMotorSpeed();
+            }
+        } catch(NumberFormatException nfe) { } catch (InterruptedException ex) {
+            Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jTextField1ActionPerformed
     
     /**
@@ -618,6 +660,18 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             System.out.println("Target Spin Time: " + targetSpinTime);
         } catch(NumberFormatException nfe) {}
     }//GEN-LAST:event_jTextField6ActionPerformed
+    
+    /**
+     * Used to set the direction of rotation
+     * @param evt 
+     */
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        if(jComboBox2.getSelectedIndex() == 0) {
+            jTextField4.setText("" + targetPosition);
+        } else {
+            jTextField4.setText("-" + targetPosition);
+        }
+    }//GEN-LAST:event_jComboBox2ActionPerformed
     
     /**
      * Given an RPM reading set the speed by converting to micro-steps per second
