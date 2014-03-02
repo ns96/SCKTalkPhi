@@ -1,7 +1,6 @@
+
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2014 Instras Scientific LLC.  All Rights Reserved.
  */
 
 package com.instras.com;
@@ -25,8 +24,10 @@ import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 /**
- *
- * @author nathan
+ * A simple program to control the SCK-200X spin coater kit
+ * 
+ * @author Nathan Stevens
+ * @version 1.0 03/02/2013
  */
 public class SCKTalkPhiMain extends javax.swing.JFrame {
     // this object handle talking to the motor control board
@@ -65,7 +66,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         // the window is closed
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                jButton1ActionPerformed(null);
+                exitButtonActionPerformed(null);
             }
         });
     }
@@ -80,9 +81,9 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         // check to see if spin time is not more that the target time
         // if it is then stop the motor
         if(targetSpinTime > 0 && spinTime > targetSpinTime) {
-            jButton5ActionPerformed(null);
+            stopButtonActionPerformed(null);
         } else {
-            jLabel13.setText(spinTime + " sec");
+            spinTimeLabel.setText(spinTime + " sec");
         }
     }
 
@@ -96,81 +97,81 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel14 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        exitButton = new javax.swing.JButton();
+        startButton = new javax.swing.JButton();
+        upButton = new javax.swing.JButton();
+        downButton = new javax.swing.JButton();
+        stopButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        spinSpeedTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        runRampSequenceCheckBox = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        incrementComboBox = new javax.swing.JComboBox();
         jPanel1 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        accelarationTextField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        currentLimitTextField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        targetPositionTextField = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        currentPositionTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox();
+        directionComboBox = new javax.swing.JComboBox();
         jLabel15 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        maxSpinSpeedTextField = new javax.swing.JTextField();
+        connectButton = new javax.swing.JButton();
+        connectLabel = new javax.swing.JLabel();
+        spinSpeedLabel = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
+        spinTimeTextField = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        rampProgramTextArea = new javax.swing.JTextArea();
         jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
+        spinTimeLabel = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
+        rampStepTextField = new javax.swing.JTextField();
 
         jLabel14.setText("Max Speed");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("SCKTalkPhi v1.0.0 (02/25/2014)");
+        setTitle("SCKTalkPhi v1.0.0 (03/02/2014)");
         setPreferredSize(new java.awt.Dimension(600, 470));
 
-        jButton1.setText("EXIT");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        exitButton.setText("EXIT");
+        exitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                exitButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("START");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        startButton.setText("START");
+        startButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                startButtonActionPerformed(evt);
             }
         });
 
-        jButton3.setText("  UP  ");
-        jButton3.setToolTipText("");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        upButton.setText("  UP  ");
+        upButton.setToolTipText("");
+        upButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                upButtonActionPerformed(evt);
             }
         });
 
-        jButton4.setText("DOWN");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        downButton.setText("DOWN");
+        downButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                downButtonActionPerformed(evt);
             }
         });
 
-        jButton5.setText("STOP");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        stopButton.setText("STOP");
+        stopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                stopButtonActionPerformed(evt);
             }
         });
 
@@ -178,69 +179,69 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jLabel1.setText("Spin Speed");
         jLabel1.setToolTipText("");
 
-        jTextField1.setText("3000");
-        jTextField1.setToolTipText("");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        spinSpeedTextField.setText("3000");
+        spinSpeedTextField.setToolTipText("");
+        spinSpeedTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                spinSpeedTextFieldActionPerformed(evt);
             }
         });
 
         jLabel2.setText("Set Speed (rpm)");
 
-        jCheckBox2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jCheckBox2.setForeground(java.awt.Color.blue);
-        jCheckBox2.setText("Run Ramp Sequence");
-        jCheckBox2.setToolTipText("");
-        jCheckBox2.setActionCommand("");
+        runRampSequenceCheckBox.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        runRampSequenceCheckBox.setForeground(java.awt.Color.blue);
+        runRampSequenceCheckBox.setText("Run Ramp Sequence");
+        runRampSequenceCheckBox.setToolTipText("");
+        runRampSequenceCheckBox.setActionCommand("");
 
         jLabel3.setText("Step Increment (rpm)");
         jLabel3.setToolTipText("");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "10", "20", "50", "100" }));
-        jComboBox1.setSelectedIndex(1);
-        jComboBox1.setToolTipText("");
+        incrementComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1", "10", "20", "50", "100" }));
+        incrementComboBox.setSelectedIndex(1);
+        incrementComboBox.setToolTipText("");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Advance Settings"));
 
         jLabel4.setText("Accelaration");
 
-        jTextField2.setText("5000");
-        jTextField2.setToolTipText("");
+        accelarationTextField.setText("5000");
+        accelarationTextField.setToolTipText("");
 
         jLabel5.setText("Current Limit");
 
-        jTextField3.setText("1.0");
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        currentLimitTextField.setText("1.0");
+        currentLimitTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                currentLimitTextFieldActionPerformed(evt);
             }
         });
 
         jLabel6.setText("Target Position");
         jLabel6.setToolTipText("");
 
-        jTextField4.setText("10000000");
-        jTextField4.setToolTipText("");
+        targetPositionTextField.setText("10000000");
+        targetPositionTextField.setToolTipText("");
 
         jLabel7.setText("Current Position");
 
-        jTextField5.setText("0");
-        jTextField5.setToolTipText("");
+        currentPositionTextField.setText("0");
+        currentPositionTextField.setToolTipText("");
 
         jLabel8.setText("Rotation");
         jLabel8.setToolTipText("");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Clockwise", "Counter Clockwise" }));
-        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+        directionComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Clockwise", "Counter Clockwise" }));
+        directionComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox2ActionPerformed(evt);
+                directionComboBoxActionPerformed(evt);
             }
         });
 
         jLabel15.setText("Max Speed");
 
-        jTextField7.setText("5000");
+        maxSpinSpeedTextField.setText("5000");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -256,85 +257,87 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                     .addComponent(jLabel15))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField5)
-                    .addComponent(jTextField2)
-                    .addComponent(jTextField3)
-                    .addComponent(jTextField4)
-                    .addComponent(jComboBox2, 0, 141, Short.MAX_VALUE)
-                    .addComponent(jTextField7)))
+                    .addComponent(currentPositionTextField)
+                    .addComponent(accelarationTextField)
+                    .addComponent(currentLimitTextField)
+                    .addComponent(targetPositionTextField)
+                    .addComponent(directionComboBox, 0, 141, Short.MAX_VALUE)
+                    .addComponent(maxSpinSpeedTextField)))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(accelarationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(currentLimitTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(targetPositionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(currentPositionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(maxSpinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(directionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 14, Short.MAX_VALUE))
         );
 
-        jButton6.setText("Connect");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        connectButton.setText("Connect");
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                connectButtonActionPerformed(evt);
             }
         });
 
-        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel9.setForeground(java.awt.Color.red);
-        jLabel9.setText("Not Connected");
+        connectLabel.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        connectLabel.setForeground(java.awt.Color.red);
+        connectLabel.setText("Not Connected");
 
-        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(0, 51, 255));
-        jLabel10.setText("0");
+        spinSpeedLabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        spinSpeedLabel.setForeground(new java.awt.Color(0, 51, 255));
+        spinSpeedLabel.setText("0");
 
         jLabel11.setText("Spin Time (s)");
 
-        jTextField6.setText("0");
-        jTextField6.setToolTipText("");
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
+        spinTimeTextField.setText("0");
+        spinTimeTextField.setToolTipText("");
+        spinTimeTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
+                spinTimeTextFieldActionPerformed(evt);
             }
         });
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jTextArea2.setText("STEP #, RPM, Dwell Time (s)\n1, 500, 25\n2, 1500, 30\n3, 2500, 30\n4, 100, 15");
-        jScrollPane2.setViewportView(jTextArea2);
+        rampProgramTextArea.setColumns(20);
+        rampProgramTextArea.setRows(5);
+        rampProgramTextArea.setText("STEP #, RPM, Dwell Time (s)\n1, 500, 25\n2, 1500, 30\n3, 2500, 30\n4, 100, 15");
+        jScrollPane2.setViewportView(rampProgramTextArea);
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel12.setText("Spin Time");
 
-        jLabel13.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel13.setForeground(java.awt.Color.blue);
-        jLabel13.setText("0");
+        spinTimeLabel.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        spinTimeLabel.setForeground(java.awt.Color.blue);
+        spinTimeLabel.setText("0");
 
         jLabel16.setText("Ramp Step");
 
-        jTextField8.setText("Not Running");
-        jTextField8.addActionListener(new java.awt.event.ActionListener() {
+        rampStepTextField.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        rampStepTextField.setForeground(java.awt.Color.blue);
+        rampStepTextField.setText("Program Not Running ..");
+        rampStepTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField8ActionPerformed(evt);
+                rampStepTextFieldActionPerformed(evt);
             }
         });
 
@@ -353,30 +356,30 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                                     .addComponent(jLabel12))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(spinSpeedLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(spinTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jButton6)
+                                        .addComponent(connectButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(connectLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                                 .addComponent(jLabel2)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(spinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(layout.createSequentialGroup()
                                                 .addComponent(jLabel3)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(incrementComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGap(0, 8, Short.MAX_VALUE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(runRampSequenceCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -384,18 +387,18 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                                     .addComponent(jLabel16))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField8)
-                                    .addComponent(jTextField6)))))
+                                    .addComponent(rampStepTextField)
+                                    .addComponent(spinTimeTextField)))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2)
+                        .addComponent(startButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3)
+                        .addComponent(upButton)
                         .addGap(8, 8, 8)
-                        .addComponent(jButton4)
+                        .addComponent(downButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5)
+                        .addComponent(stopButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                        .addComponent(exitButton)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -403,9 +406,9 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox2)
-                    .addComponent(jButton6)
-                    .addComponent(jLabel9))
+                    .addComponent(runRampSequenceCheckBox)
+                    .addComponent(connectButton)
+                    .addComponent(connectLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -414,31 +417,31 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel10))
+                            .addComponent(spinSpeedLabel))
                         .addGap(4, 4, 4)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel12)
-                            .addComponent(jLabel13)))
+                            .addComponent(spinTimeLabel)))
                     .addComponent(jScrollPane2))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(incrementComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel16)
-                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(rampStepTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spinTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton5)
-                    .addComponent(jButton4)
-                    .addComponent(jButton3)
-                    .addComponent(jButton2))
+                    .addComponent(exitButton)
+                    .addComponent(stopButton)
+                    .addComponent(downButton)
+                    .addComponent(upButton)
+                    .addComponent(startButton))
                 .addContainerGap())
         );
 
@@ -450,34 +453,34 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
      * 
      * @param evt 
      */
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         if(stepperPhidget == null) return;
         
         try {
-            jButton2.setEnabled(false);
+            startButton.setEnabled(false);
             
             //Set up some initial acceleration and velocity values
-            Long accleration = new Long(jTextField2.getText());
+            Long accleration = new Long(accelarationTextField.getText());
             stepperPhidget.setAcceleration(0, accleration);
             
             // set the current limit
-            stepperPhidget.setCurrentLimit(0, Double.parseDouble(jTextField3.getText()));
+            stepperPhidget.setCurrentLimit(0, Double.parseDouble(currentLimitTextField.getText()));
             
             // now set the current position
             stepperPhidget.setCurrentPosition(0, 0L);
             
             // set the target position to some really big number
-            targetPosition = new Long(jTextField4.getText());
+            targetPosition = new Long(targetPositionTextField.getText());
             stepperPhidget.setTargetPosition(0, targetPosition);
             
             // set the spin time
-            jTextField6ActionPerformed(null);
+            spinTimeTextFieldActionPerformed(null);
             
             // power-up the motor now
             System.out.println("\nEngaging Stepper Motor\n");
             stepperPhidget.setEngaged(0, true);
             
-            if(jCheckBox2.isSelected()) {
+            if(runRampSequenceCheckBox.isSelected()) {
                 // start a step seqence
                 startStepSequence();
             } else {
@@ -485,12 +488,12 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                 spinTimer.start();
             
                 // set the speed now
-                jTextField1ActionPerformed(null);
+                spinSpeedTextFieldActionPerformed(null);
             }
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_startButtonActionPerformed
     
     /**
      * Method to run the step sequence the step sequence
@@ -502,7 +505,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                 stopMotor = false;
                 
                 // get the step sequences
-                String[] stepSeqences = jTextArea2.getText().split("\n");
+                String[] stepSeqences = rampProgramTextArea.getText().split("\n");
                 
                 // interate over the lines containing the seqences
                 for(int i = 1; i < stepSeqences.length; i++) {
@@ -510,23 +513,23 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                     String setSpeedString = stepInfo[1];
                     targetSpinTime = Integer.parseInt(stepInfo[2]);
                     
-                    jTextField8.setText(stepInfo[0] + ", " + setSpeedString + " rpms, " + targetSpinTime + " sec");
+                    rampStepTextField.setText(stepInfo[0] + ", " + setSpeedString + " rpms, " + targetSpinTime + " sec");
                     
                     // start the motor spinning
-                    jTextField1.setText(setSpeedString);
-                    jTextField1ActionPerformed(null);
+                    spinSpeedTextField.setText(setSpeedString);
+                    spinSpeedTextFieldActionPerformed(null);
                     
                     // use a loop to keep track of time this step is running
                     int count = 0;
                     while(count < targetSpinTime) {
                         // check to if the motor was stop
                         if(stopMotor) {
-                            jTextField8.setText("Sequenced Stoped ...");
+                            rampStepTextField.setText("Sequenced Stoped ...");
                             return false;
                         }
                         
                         // update the count timer
-                        jLabel13.setText("" + (targetSpinTime - count));
+                        spinTimeLabel.setText("" + (targetSpinTime - count));
                         
                         try {
                             Thread.sleep(1000);
@@ -539,7 +542,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                 }
                 
                 // stop the motor now
-                jButton5ActionPerformed(null);
+                stopButtonActionPerformed(null);
                 
                 // seqeunce complete so return true
                 return true;
@@ -553,7 +556,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
      * Exit the program
      * @param evt 
      */
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         if(stepperPhidget != null) {
             try {
                 stepperPhidget.setEngaged(0, false);
@@ -564,14 +567,14 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         }
         
         System.exit(0);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_exitButtonActionPerformed
     
     /**
      * Connect to the stepper phidget board
      * 
      * @param evt 
      */
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
         if(stepperPhidget != null) {
             return;
         }
@@ -590,13 +593,13 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             System.out.println("# Steppers: " + stepperPhidget.getMotorCount());
             
             // update the UI label to indicate successful connection
-            jLabel9.setForeground(new Color(0x00, 0xC0, 0x00));
-            jLabel9.setText("Connected to SCK-200X");
+            connectLabel.setForeground(new Color(0x00, 0xC0, 0x00));
+            connectLabel.setText("Connected to SCK-200X");
             
             // add some listeners now
             stepperPhidget.addErrorListener(new ErrorListener() {
                 public void error(ErrorEvent ex) {
-                    jLabel9.setText("Connection Failed ...");
+                    connectLabel.setText("Connection Failed ...");
                     System.out.println("\n--->Error: " + ex.getException());
                 }
             });
@@ -606,7 +609,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                 @Override
                 public void stepperVelocityChanged(StepperVelocityChangeEvent svce) {
                     int speed = (int)(((svce.getValue()/16.0)/96.0)*60.0);
-                    jLabel10.setText(speed + " rpms");
+                    spinSpeedLabel.setText(speed + " rpms");
                 }
             });
             
@@ -615,24 +618,24 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
                 @Override
                 public void stepperPositionChanged(StepperPositionChangeEvent spce) {
                     double position = spce.getValue();
-                    jTextField5.setText("" + position);
+                    currentPositionTextField.setText("" + position);
                 }
             });
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_connectButtonActionPerformed
     
     /**
      * Set the current motor speed
      * 
      * @param evt 
      */
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void spinSpeedTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spinSpeedTextFieldActionPerformed
         try {
             int changeBy = 50; // how much to change the speed by
                     
-            int newSpeed = Integer.parseInt(jTextField1.getText());
+            int newSpeed = Integer.parseInt(spinSpeedTextField.getText());
             
             if(newSpeed >= setSpeed) {
                 /* we need to increate is steps of 100 rpms
@@ -664,13 +667,13 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         } catch(NumberFormatException nfe) { } catch (InterruptedException ex) {
             Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_spinSpeedTextFieldActionPerformed
     
     /**
      * Stop the motor
      * @param evt 
      */
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
         stopMotor = true;
         
         try {
@@ -681,36 +684,36 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             spinTimer.stop();
             spinTime = 0;
             
-            jLabel10.setText("stopped");
-            jLabel13.setText("0");
-            jButton2.setEnabled(true);
+            spinSpeedLabel.setText("stopped");
+            spinTimeLabel.setText("0");
+            startButton.setEnabled(true);
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
         } 
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_stopButtonActionPerformed
 
     /**
      * The UP button was pressed so increment the current speed
      * 
      * @param evt 
      */
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        int increment = Integer.parseInt(jComboBox1.getSelectedItem().toString());
+    private void upButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
+        int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
         setSpeed += increment;
         
         // update the UI and set the motor speed
-        jTextField1.setText(""+ setSpeed);
+        spinSpeedTextField.setText(""+ setSpeed);
         
         setMotorSpeed();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_upButtonActionPerformed
     
     /**
      * The DOWN button was pressed so reduce the speed
      * 
      * @param evt 
      */
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        int increment = Integer.parseInt(jComboBox1.getSelectedItem().toString());
+    private void downButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downButtonActionPerformed
+        int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
         setSpeed -= increment;
         
         if(setSpeed < 0) {
@@ -718,59 +721,59 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         }
         
         // update the UI and set the motor speed
-        jTextField1.setText(""+ setSpeed);
+        spinSpeedTextField.setText(""+ setSpeed);
         
         setMotorSpeed();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_downButtonActionPerformed
     
     /**
      * Set the current sent to the motor
      * 
      * @param evt 
      */
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void currentLimitTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currentLimitTextFieldActionPerformed
         if(stepperPhidget == null) return;
         
         try {
-            double current = Double.parseDouble(jTextField3.getText());
+            double current = Double.parseDouble(currentLimitTextField.getText());
             System.out.println("Setting Current To: " + current);
             stepperPhidget.setCurrentLimit(0, current);
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiMain.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_currentLimitTextFieldActionPerformed
     
     /**
      * Set the target time
      * 
      * @param evt 
      */
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+    private void spinTimeTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spinTimeTextFieldActionPerformed
         try {
-            targetSpinTime = Integer.parseInt(jTextField6.getText());
+            targetSpinTime = Integer.parseInt(spinTimeTextField.getText());
             System.out.println("Target Spin Time: " + targetSpinTime);
         } catch(NumberFormatException nfe) {}
-    }//GEN-LAST:event_jTextField6ActionPerformed
+    }//GEN-LAST:event_spinTimeTextFieldActionPerformed
     
     /**
      * Used to set the direction of rotation
      * @param evt 
      */
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-        if(jComboBox2.getSelectedIndex() == 0) {
-            jTextField4.setText("" + targetPosition);
+    private void directionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directionComboBoxActionPerformed
+        if(directionComboBox.getSelectedIndex() == 0) {
+            targetPositionTextField.setText("" + targetPosition);
         } else {
-            jTextField4.setText("-" + targetPosition);
+            targetPositionTextField.setText("-" + targetPosition);
         }
-    }//GEN-LAST:event_jComboBox2ActionPerformed
+    }//GEN-LAST:event_directionComboBoxActionPerformed
     
     /**
      * Start the step sequence. This is just for testing
      * @param evt 
      */
-    private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed
+    private void rampStepTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rampStepTextFieldActionPerformed
         startStepSequence();
-    }//GEN-LAST:event_jTextField8ActionPerformed
+    }//GEN-LAST:event_rampStepTextFieldActionPerformed
     
     /**
      * Given an RPM reading set the speed by converting to micro-steps per second
@@ -806,20 +809,18 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox2;
+    private javax.swing.JTextField accelarationTextField;
+    private javax.swing.JButton connectButton;
+    private javax.swing.JLabel connectLabel;
+    private javax.swing.JTextField currentLimitTextField;
+    private javax.swing.JTextField currentPositionTextField;
+    private javax.swing.JComboBox directionComboBox;
+    private javax.swing.JButton downButton;
+    private javax.swing.JButton exitButton;
+    private javax.swing.JComboBox incrementComboBox;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -830,17 +831,19 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
+    private javax.swing.JTextField maxSpinSpeedTextField;
+    private javax.swing.JTextArea rampProgramTextArea;
+    private javax.swing.JTextField rampStepTextField;
+    private javax.swing.JCheckBox runRampSequenceCheckBox;
+    private javax.swing.JLabel spinSpeedLabel;
+    private javax.swing.JTextField spinSpeedTextField;
+    private javax.swing.JLabel spinTimeLabel;
+    private javax.swing.JTextField spinTimeTextField;
+    private javax.swing.JButton startButton;
+    private javax.swing.JButton stopButton;
+    private javax.swing.JTextField targetPositionTextField;
+    private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 }
