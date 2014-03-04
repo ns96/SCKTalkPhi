@@ -38,7 +38,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     private long targetPosition = 10000000L;
     
     // The spin speed to set
-    private int setSpeed = 3000;
+    private int setSpeed = 0;
     
     // the time object for count seconds
     private Timer spinTimer = null;
@@ -73,7 +73,6 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     
     /**
      * Method to update the spin time or stop the motor from spinning
-     * 
      */
     private void updateSpinTime() {
         spinTime++;
@@ -136,7 +135,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jLabel14.setText("Max Speed");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("SCKTalkPhi v1.0.0 (03/02/2014)");
+        setTitle("SCKTalkPhi v1.0.0 (03/0/2014)");
         setPreferredSize(new java.awt.Dimension(600, 470));
 
         exitButton.setText("EXIT");
@@ -221,7 +220,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jLabel6.setText("Target Position");
         jLabel6.setToolTipText("");
 
-        targetPositionTextField.setText("10000000");
+        targetPositionTextField.setText("1000000000");
         targetPositionTextField.setToolTipText("");
 
         jLabel7.setText("Current Position");
@@ -638,18 +637,20 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             int newSpeed = Integer.parseInt(spinSpeedTextField.getText());
             
             if(newSpeed >= setSpeed) {
-                /* we need to increate is steps of 100 rpms
-                int diff = newSpeed- setSpeed;
-                while (setSpeed < newSpeed && diff > changeBy) {
-                    setSpeed += changeBy;
+                // we need to increate is steps of 100 rpms
+                int diff = newSpeed - setSpeed;
+                while (setSpeed < newSpeed && setSpeed != 0 && diff > changeBy*10) {
+                    setSpeed += changeBy*2;
                     setMotorSpeed();
                     
                     // pause a bit before increasing speed again
                     Thread.sleep(50);
-                }*/
+                }
                 
-                setSpeed = newSpeed;
-                setMotorSpeed();
+                if(setSpeed != newSpeed) {
+                    setSpeed = newSpeed;
+                    setMotorSpeed();
+                }
             } else {
                 // we need to decrese is steps of 100 rpms
                 int diff = setSpeed - newSpeed;
@@ -683,6 +684,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
             
             spinTimer.stop();
             spinTime = 0;
+            setSpeed = 0;
             
             spinSpeedLabel.setText("stopped");
             spinTimeLabel.setText("0");
@@ -781,7 +783,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
     public void setMotorSpeed() {
         double rps = setSpeed/60.0; // rounds per second 
         double sps = rps*96.0;      // steps per second 
-        long msps = (long)sps*16;   // get the microsteps needed
+        long msps = (long)sps*16;   // get the microsteps per second needed
         
         System.out.println("RPM: " + setSpeed + ", Microsteps/sec: " + msps);
         
