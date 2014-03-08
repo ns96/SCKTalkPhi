@@ -20,6 +20,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
@@ -135,7 +136,7 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
         jLabel14.setText("Max Speed");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("SCKTalkPhi v1.0.0 (03/0/2014)");
+        setTitle("SCKTalkPhi v1.0.0 (03/08/2014)");
         setPreferredSize(new java.awt.Dimension(600, 470));
 
         exitButton.setText("EXIT");
@@ -453,7 +454,14 @@ public class SCKTalkPhiMain extends javax.swing.JFrame {
      * @param evt 
      */
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        if(stepperPhidget == null) return;
+        if(stepperPhidget == null) {
+            JOptionPane.showMessageDialog(this,
+                "The SCK-200X is not connected ...",
+                "Connection Error",
+                JOptionPane.ERROR_MESSAGE);
+            
+            return;
+        }
         
         try {
             startButton.setEnabled(false);
