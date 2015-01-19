@@ -53,7 +53,11 @@ public class SCKTalkPhi {
                     sckTalkPhiDesktop.pack();
                     sckTalkPhiDesktop.setVisible(true);
                 } else {
-                    // we must be on Raspberry Pi to go into full screen mode
+                    // we must be on Raspberry Pi to go into full screen mode and make sure
+                    // to run this program as root by first running startx as root
+                    // "sudo FRAMEBUFFER=/dev/fb1 startx"
+                    // sudo ./run.sh
+
                     SCKTalkPhiRaspberryPi sckTalkPhiRaspberryPi = new SCKTalkPhiRaspberryPi();
 
                     JFrame frame = new JFrame();
@@ -76,8 +80,8 @@ public class SCKTalkPhi {
                         // Can't run fullscreen, need to bodge around it (setSize to screen size, etc)
                     }
 
-                    sckTalkPhiRaspberryPi.validate();
-                    sckTalkPhiRaspberryPi.setVisible(true);
+                    frame.validate();
+                    frame.setVisible(true);
                 }
             }
         });

@@ -14,11 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.instras.com;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -29,31 +47,56 @@ import javax.swing.border.LineBorder;
  * @author nathan
  */
 public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
-
+    private JTextField currentRampTextField;
+    
     /**
      * Creates new form SCKTalkPhiRaspberryPi
      */
     public SCKTalkPhiRaspberryPi() {
         initComponents();
     }
-    
+
     /**
      * Method to create simple buttons that look OK on the Raspberry Pi
-     * 
-     * @return 
+     *
+     * @return
      */
     private JButton createSimpleButton() {
         JButton button = new JButton();
+        simplifyComponent(button);
+        return button;
+    }
+    
+    /* Method to create simple toogle that look OK on the Raspberry Pi
+     *
+     * @return
+     */
+    private JToggleButton createSimpleToggleButton() {
+        JToggleButton button = new JToggleButton();
+        simplifyComponent(button);
+        return button;
+    }
+    
+    /**
+     * Simply the buttons to display OK on a raspberry pi TFT
+     * @return 
+     */
+    private JComboBox createSimpleCombobox() {
+        JComboBox comboBox = new JComboBox();
+        comboBox.setForeground(Color.BLACK);
+        comboBox.setBackground(Color.WHITE);
+        return comboBox;
+    }
+    
+    private void simplifyComponent(JComponent button) {
         button.setForeground(Color.BLACK);
         button.setBackground(Color.WHITE);
         Border line = new LineBorder(Color.BLACK);
         Border margin = new EmptyBorder(5, 15, 5, 15);
         Border compound = new CompoundBorder(line, margin);
         button.setBorder(compound);
-        
-        return button;
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -63,95 +106,373 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        jPanel1 = new JPanel();
         startButton = createSimpleButton();
         upButton = createSimpleButton();
         downButton = createSimpleButton();
         stopButton = createSimpleButton();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
+        mainTabbedPane = new JTabbedPane();
+        jPanel2 = new JPanel();
+        connectToggleButton = createSimpleToggleButton();
+        connectLabel = new JLabel();
+        speedLabel = new JLabel();
+        timeLabel = new JLabel();
+        jLabel1 = new JLabel();
+        incrementComboBox = createSimpleCombobox();
+        jLabel2 = new JLabel();
+        speedTextField = new JTextField();
+        rampCheckBox = new JCheckBox();
+        rampTextField = new JTextField();
+        jPanel4 = new JPanel();
+        jPanel3 = new JPanel();
+        jLabel3 = new JLabel();
+        rotationComboBox = createSimpleCombobox();
+        jLabel10 = new JLabel();
+        maxSpeedTextField = new JTextField();
+        jPanel5 = new JPanel();
+        jLabel4 = new JLabel();
+        jLabel5 = new JLabel();
+        jLabel6 = new JLabel();
+        jLabel7 = new JLabel();
+        ramp1SpeedTextField = new JTextField();
+        ramp1TimeTextField = new JTextField();
+        jLabel8 = new JLabel();
+        ramp2SpeedTextField = new JTextField();
+        ramp2TimeTextField = new JTextField();
+        jLabel9 = new JLabel();
+        ramp3SpeedTextField = new JTextField();
+        ramp3TimeTextField = new JTextField();
 
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new BorderLayout());
 
-        jPanel1.setLayout(new java.awt.GridLayout());
+        jPanel1.setLayout(new GridLayout(1, 0));
 
         startButton.setText("START");
         jPanel1.add(startButton);
 
         upButton.setText("UP");
+        upButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                upButtonActionPerformed(evt);
+            }
+        });
         jPanel1.add(upButton);
 
         downButton.setText("DOWN");
+        downButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                downButtonActionPerformed(evt);
+            }
+        });
         jPanel1.add(downButton);
 
         stopButton.setText("STOP");
-        stopButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        stopButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 stopButtonActionPerformed(evt);
             }
         });
         jPanel1.add(stopButton);
 
-        add(jPanel1, java.awt.BorderLayout.SOUTH);
+        add(jPanel1, BorderLayout.SOUTH);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 249, Short.MAX_VALUE)
-        );
+        jPanel2.setLayout(new GridLayout(5, 2, 2, 2));
 
-        jTabbedPane1.addTab("MAIN", jPanel2);
+        connectToggleButton.setText("CONNECT");
+        jPanel2.add(connectToggleButton);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 249, Short.MAX_VALUE)
-        );
+        connectLabel.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        connectLabel.setText("Not Connected");
+        connectLabel.setToolTipText("");
+        jPanel2.add(connectLabel);
 
-        jTabbedPane1.addTab("RAMP MODE", jPanel3);
+        speedLabel.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        speedLabel.setForeground(Color.blue);
+        speedLabel.setText("0 rpms");
+        jPanel2.add(speedLabel);
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 249, Short.MAX_VALUE)
-        );
+        timeLabel.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        timeLabel.setForeground(Color.blue);
+        timeLabel.setText("0 sec");
+        jPanel2.add(timeLabel);
 
-        jTabbedPane1.addTab("SETUP", jPanel4);
+        jLabel1.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setText("Increment");
+        jPanel2.add(jLabel1);
 
-        add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        incrementComboBox.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        incrementComboBox.setModel(new DefaultComboBoxModel(new String[] { "1", "10", "20", "50", "100" }));
+        jPanel2.add(incrementComboBox);
+
+        jLabel2.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setText("Speed");
+        jPanel2.add(jLabel2);
+
+        speedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        speedTextField.setText("3000");
+        jPanel2.add(speedTextField);
+
+        rampCheckBox.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        rampCheckBox.setText("Ramp");
+        jPanel2.add(rampCheckBox);
+
+        rampTextField.setEditable(false);
+        rampTextField.setText("Program Not Running ...");
+        jPanel2.add(rampTextField);
+
+        mainTabbedPane.addTab("MAIN", jPanel2);
+
+        jPanel4.setLayout(new BorderLayout());
+
+        jPanel3.setLayout(new GridLayout(2, 2, 2, 2));
+
+        jLabel3.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        jLabel3.setText("Rotation");
+        jLabel3.setToolTipText("");
+        jPanel3.add(jLabel3);
+
+        rotationComboBox.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        rotationComboBox.setModel(new DefaultComboBoxModel(new String[] { "Clockwise", "Counter Clockwise" }));
+        jPanel3.add(rotationComboBox);
+
+        jLabel10.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        jLabel10.setText("Max Speed");
+        jPanel3.add(jLabel10);
+
+        maxSpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        maxSpeedTextField.setText("5000");
+        maxSpeedTextField.setToolTipText("");
+        maxSpeedTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                rampTextFieldFocusGained(evt);
+            }
+        });
+        jPanel3.add(maxSpeedTextField);
+
+        jPanel4.add(jPanel3, BorderLayout.NORTH);
+
+        jPanel5.setLayout(new GridLayout(4, 3, 2, 2));
+
+        jLabel4.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        jLabel4.setText("STEP");
+        jPanel5.add(jLabel4);
+
+        jLabel5.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        jLabel5.setText("RPM");
+        jPanel5.add(jLabel5);
+
+        jLabel6.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        jLabel6.setText("DWELL");
+        jPanel5.add(jLabel6);
+
+        jLabel7.setText("# 1");
+        jPanel5.add(jLabel7);
+
+        ramp1SpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp1SpeedTextField.setText("500");
+        ramp1SpeedTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                rampTextFieldFocusGained(evt);
+            }
+        });
+        jPanel5.add(ramp1SpeedTextField);
+
+        ramp1TimeTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp1TimeTextField.setText("30");
+        ramp1TimeTextField.setToolTipText("");
+        ramp1TimeTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                rampTextFieldFocusGained(evt);
+            }
+        });
+        jPanel5.add(ramp1TimeTextField);
+
+        jLabel8.setText("# 2");
+        jPanel5.add(jLabel8);
+
+        ramp2SpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp2SpeedTextField.setText("2000");
+        ramp2SpeedTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                rampTextFieldFocusGained(evt);
+            }
+        });
+        jPanel5.add(ramp2SpeedTextField);
+
+        ramp2TimeTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp2TimeTextField.setText("30");
+        ramp2TimeTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                rampTextFieldFocusGained(evt);
+            }
+        });
+        jPanel5.add(ramp2TimeTextField);
+
+        jLabel9.setText("# 3");
+        jPanel5.add(jLabel9);
+
+        ramp3SpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp3SpeedTextField.setText("3000");
+        ramp3SpeedTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                rampTextFieldFocusGained(evt);
+            }
+        });
+        jPanel5.add(ramp3SpeedTextField);
+
+        ramp3TimeTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp3TimeTextField.setText("60");
+        ramp3TimeTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                rampTextFieldFocusGained(evt);
+            }
+        });
+        jPanel5.add(ramp3TimeTextField);
+
+        jPanel4.add(jPanel5, BorderLayout.CENTER);
+
+        mainTabbedPane.addTab("SETUP", jPanel4);
+
+        add(mainTabbedPane, BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+    private void stopButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_stopButtonActionPerformed
-
-
+    
+    /**
+     * Method to handle events from the up button
+     * 
+     * @param evt 
+     */
+    private void upButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
+        if(mainTabbedPane.getSelectedIndex() == 0) {
+            increaseSpeedTextFieldValue();
+        } else if(currentRampTextField != null) {
+            increaseRampTextFieldValue();
+        }
+    }//GEN-LAST:event_upButtonActionPerformed
+    
+    /**
+     * Increase the value for particular ramp text field
+     */
+    private void increaseSpeedTextFieldValue() {
+        int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
+        int value = Integer.parseInt(speedTextField.getText());
+        value += increment;
+        speedTextField.setText("" + value);
+    }
+    
+    /**
+     * Increase the value for particular ramp text field
+     */
+    private void increaseRampTextFieldValue() {
+        int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
+        int value = Integer.parseInt(currentRampTextField.getText());
+        value += increment;
+        currentRampTextField.setText("" + value);
+    }
+    
+    /**
+     * Used for setting the current ram text field
+     * @param evt 
+     */
+    private void rampTextFieldFocusGained(FocusEvent evt) {//GEN-FIRST:event_rampTextFieldFocusGained
+        currentRampTextField = (JTextField)evt.getComponent();
+    }//GEN-LAST:event_rampTextFieldFocusGained
+    
+    /**
+     * Method to handle events from the down button
+     * @param evt 
+     */
+    private void downButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_downButtonActionPerformed
+        if(mainTabbedPane.getSelectedIndex() == 0) {
+            decreaseSpeedTextFieldValue();
+        } else if(currentRampTextField != null) {
+            decreaseRampTextFieldValue();
+        }
+    }//GEN-LAST:event_downButtonActionPerformed
+    
+    /**
+     * decrease the value for particular ramp text field
+     */
+    private void decreaseSpeedTextFieldValue() {
+        int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
+        int value = Integer.parseInt(speedTextField.getText());
+        value -= increment;
+        speedTextField.setText("" + value);
+    }
+    
+    /**
+     * decrease the value for particular ramp text field
+     */
+    private void decreaseRampTextFieldValue() {
+        int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
+        int value = Integer.parseInt(currentRampTextField.getText());
+        value -= increment;
+        currentRampTextField.setText("" + value);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton downButton;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JButton startButton;
-    private javax.swing.JButton stopButton;
-    private javax.swing.JButton upButton;
+    private JLabel connectLabel;
+    private JToggleButton connectToggleButton;
+    private JButton downButton;
+    private JComboBox incrementComboBox;
+    private JLabel jLabel1;
+    private JLabel jLabel10;
+    private JLabel jLabel2;
+    private JLabel jLabel3;
+    private JLabel jLabel4;
+    private JLabel jLabel5;
+    private JLabel jLabel6;
+    private JLabel jLabel7;
+    private JLabel jLabel8;
+    private JLabel jLabel9;
+    private JPanel jPanel1;
+    private JPanel jPanel2;
+    private JPanel jPanel3;
+    private JPanel jPanel4;
+    private JPanel jPanel5;
+    private JTabbedPane mainTabbedPane;
+    private JTextField maxSpeedTextField;
+    private JTextField ramp1SpeedTextField;
+    private JTextField ramp1TimeTextField;
+    private JTextField ramp2SpeedTextField;
+    private JTextField ramp2TimeTextField;
+    private JTextField ramp3SpeedTextField;
+    private JTextField ramp3TimeTextField;
+    private JCheckBox rampCheckBox;
+    private JTextField rampTextField;
+    private JComboBox rotationComboBox;
+    private JLabel speedLabel;
+    private JTextField speedTextField;
+    private JButton startButton;
+    private JButton stopButton;
+    private JLabel timeLabel;
+    private JButton upButton;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * Main method for testing the UI on the desktop
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                SCKTalkPhiRaspberryPi sckTalkPhiRaspberryPi = new SCKTalkPhiRaspberryPi();
+
+                JFrame frame = new JFrame();
+                frame.setSize(320, 240);
+                frame.setResizable(false);
+                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+                // add the GUI panel now
+                frame.add(sckTalkPhiRaspberryPi);
+
+                frame.validate();
+                frame.setVisible(true);
+            }
+        });
+    }
 }
