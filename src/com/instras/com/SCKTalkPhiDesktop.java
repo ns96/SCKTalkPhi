@@ -56,6 +56,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     
     // the time object for count seconds
     private Timer spinTimer = null;
+    
+    // keep track of the spin time
     private int spinTime = 0;
     private int targetSpinTime = 0;
     
@@ -544,7 +546,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                     while(count < targetSpinTime) {
                         // check to if the motor was stop
                         if(stopMotor) {
-                            rampStepTextField.setText("Sequenced Stoped ...");
+                            rampStepTextField.setText("Sequenced Stopped ...");
                             return false;
                         }
                         
