@@ -18,6 +18,10 @@ package com.instras.com;
 
 import com.phidgets.PhidgetException;
 import com.phidgets.StepperPhidget;
+import com.phidgets.event.ErrorEvent;
+import com.phidgets.event.ErrorListener;
+import com.phidgets.event.StepperVelocityChangeEvent;
+import com.phidgets.event.StepperVelocityChangeListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -27,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
@@ -54,47 +59,51 @@ import javax.swing.border.LineBorder;
  * @author nathan
  */
 public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
+
     // need to make this global since on the rPi touch screen 
     // we don't have a keyboard to enter values
     private JTextField currentRampTextField;
-    
+
     // this object handle talking to the motor control board
     private StepperPhidget stepperPhidget;
-    
+
     // The position target to move to. This must be a very big number to 
     // keep motor turning continuesly
     private long targetPosition = 10000000L;
-    
+
     // this specifies how fast the motor should accelarate
     private long accleration = 5000L;
-    
+
     // the current limit of 1.0
     private double currentLimit = 1.0;
-    
+
     // this sets how many seconds the motor should spin by default ( 5 min)
-    private int targetSpinTime = 300; 
-    
+    private int targetSpinTime = 300;
+
     // The spin speed to set
     private int setSpeed = 0;
-    
+
     // the time object for count seconds
     private Timer spinTimer = null;
-    
+
     // keep track of the spin time
     private int spinTime = 0;
-    
+
     // used to exit the ramp sequence thread if the stop button was pressed
     private boolean stopMotor;
-    
+
+    // formatter used to only display one decimal place
+    private final DecimalFormat df = new DecimalFormat("0.0");
+
     /**
      * Creates new form SCKTalkPhiRaspberryPi
      */
     public SCKTalkPhiRaspberryPi() {
         initComponents();
-        
+
         // set the inital motor speed
-        setSpeed = Integer.parseInt(speedTextField.getText());
-        
+        setSpeed = Integer.parseInt(spinSpeedTextField.getText());
+
         // create a timer object for count seconds the motor is spining
         spinTimer = new Timer(1000, new ActionListener() {
             @Override
@@ -103,22 +112,22 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             }
         });
     }
-    
+
     /**
      * Method to update the spin time or stop the motor from spinning
      */
     private void updateSpinTime() {
         spinTime++;
-        
+
         // check to see if spin time is not more that the target time
         // if it is then stop the motor
-        if(targetSpinTime > 0 && spinTime > targetSpinTime) {
+        if (targetSpinTime > 0 && spinTime > targetSpinTime) {
             stopButtonActionPerformed(null);
         } else {
             spinTimeLabel.setText(spinTime + " sec");
         }
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -142,15 +151,17 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jLabel1 = new JLabel();
         incrementComboBox = createSimpleCombobox();
         jLabel2 = new JLabel();
-        speedTextField = new JTextField();
+        spinSpeedTextField = new JTextField();
         runRampCheckBox = new JCheckBox();
-        rampTextField = new JTextField();
+        rampStepTextField = new JTextField();
         jPanel4 = new JPanel();
         jPanel3 = new JPanel();
         jLabel3 = new JLabel();
         rotationComboBox = createSimpleCombobox();
         jLabel10 = new JLabel();
         maxSpeedTextField = new JTextField();
+        jLabel11 = new JLabel();
+        currentLimitTextField = new JTextField();
         jPanel5 = new JPanel();
         jLabel4 = new JLabel();
         jLabel5 = new JLabel();
@@ -161,9 +172,6 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jLabel8 = new JLabel();
         ramp2SpeedTextField = new JTextField();
         ramp2TimeTextField = new JTextField();
-        jLabel9 = new JLabel();
-        ramp3SpeedTextField = new JTextField();
-        ramp3TimeTextField = new JTextField();
 
         setLayout(new BorderLayout());
 
@@ -206,6 +214,11 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jPanel2.setLayout(new GridLayout(5, 2, 2, 2));
 
         connectToggleButton.setText("CONNECT");
+        connectToggleButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                connectToggleButtonActionPerformed(evt);
+            }
+        });
         jPanel2.add(connectToggleButton);
 
         connectLabel.setFont(new Font("Tahoma", 1, 14)); // NOI18N
@@ -235,23 +248,23 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jLabel2.setText("Speed");
         jPanel2.add(jLabel2);
 
-        speedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
-        speedTextField.setText("3000");
-        jPanel2.add(speedTextField);
+        spinSpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        spinSpeedTextField.setText("3000");
+        jPanel2.add(spinSpeedTextField);
 
         runRampCheckBox.setFont(new Font("Tahoma", 1, 14)); // NOI18N
         runRampCheckBox.setText("Ramp");
         jPanel2.add(runRampCheckBox);
 
-        rampTextField.setEditable(false);
-        rampTextField.setText("Program Not Running ...");
-        jPanel2.add(rampTextField);
+        rampStepTextField.setEditable(false);
+        rampStepTextField.setText("Program Not Running ...");
+        jPanel2.add(rampStepTextField);
 
         mainTabbedPane.addTab("MAIN", jPanel2);
 
         jPanel4.setLayout(new BorderLayout());
 
-        jPanel3.setLayout(new GridLayout(2, 2, 2, 2));
+        jPanel3.setLayout(new GridLayout(3, 2, 2, 2));
 
         jLabel3.setFont(new Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setText("Rotation");
@@ -276,9 +289,22 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel3.add(maxSpeedTextField);
 
+        jLabel11.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        jLabel11.setText("Current Limit");
+        jPanel3.add(jLabel11);
+
+        currentLimitTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        currentLimitTextField.setText("1.0");
+        currentLimitTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                currentLimitTextFieldFocusGained(evt);
+            }
+        });
+        jPanel3.add(currentLimitTextField);
+
         jPanel4.add(jPanel3, BorderLayout.NORTH);
 
-        jPanel5.setLayout(new GridLayout(4, 3, 2, 2));
+        jPanel5.setLayout(new GridLayout(3, 3, 2, 2));
 
         jLabel4.setFont(new Font("Tahoma", 1, 11)); // NOI18N
         jLabel4.setText("STEP");
@@ -305,7 +331,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jPanel5.add(ramp1SpeedTextField);
 
         ramp1TimeTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
-        ramp1TimeTextField.setText("30");
+        ramp1TimeTextField.setText("10");
         ramp1TimeTextField.setToolTipText("");
         ramp1TimeTextField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
@@ -318,7 +344,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jPanel5.add(jLabel8);
 
         ramp2SpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
-        ramp2SpeedTextField.setText("2000");
+        ramp2SpeedTextField.setText("3000");
+        ramp2SpeedTextField.setToolTipText("");
         ramp2SpeedTextField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
                 rampTextFieldFocusGained(evt);
@@ -334,27 +361,6 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             }
         });
         jPanel5.add(ramp2TimeTextField);
-
-        jLabel9.setText("# 3");
-        jPanel5.add(jLabel9);
-
-        ramp3SpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
-        ramp3SpeedTextField.setText("3000");
-        ramp3SpeedTextField.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                rampTextFieldFocusGained(evt);
-            }
-        });
-        jPanel5.add(ramp3SpeedTextField);
-
-        ramp3TimeTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
-        ramp3TimeTextField.setText("60");
-        ramp3TimeTextField.addFocusListener(new FocusAdapter() {
-            public void focusGained(FocusEvent evt) {
-                rampTextFieldFocusGained(evt);
-            }
-        });
-        jPanel5.add(ramp3TimeTextField);
 
         jPanel4.add(jPanel5, BorderLayout.CENTER);
 
@@ -373,7 +379,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         simplifyComponent(button);
         return button;
     }
-    
+
     /* Method to create simple toogle that look OK on the Raspberry Pi
      *
      * @return
@@ -383,10 +389,11 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         simplifyComponent(button);
         return button;
     }
-    
+
     /**
      * Simply the buttons to display OK on a raspberry pi TFT
-     * @return 
+     *
+     * @return
      */
     private JComboBox createSimpleCombobox() {
         JComboBox comboBox = new JComboBox();
@@ -394,7 +401,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         comboBox.setBackground(Color.WHITE);
         return comboBox;
     }
-    
+
     private void simplifyComponent(JComponent button) {
         button.setForeground(Color.BLACK);
         button.setBackground(Color.WHITE);
@@ -403,105 +410,113 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         Border compound = new CompoundBorder(line, margin);
         button.setBorder(compound);
     }
-      
+
     /**
      * Method to stop the stepper motor from spinning
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void stopButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
         stopMotor = true;
-        
+
         try {
-            if(stepperPhidget != null) {
+            if (stepperPhidget != null) {
                 stepperPhidget.setEngaged(0, false);
             }
-            
+
             spinTimer.stop();
             spinTime = 0;
             setSpeed = 0;
-            
+
             spinSpeedLabel.setText("stopped");
             spinTimeLabel.setText("0");
             startButton.setEnabled(true);
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
     }//GEN-LAST:event_stopButtonActionPerformed
-    
+
     /**
      * Method to handle events from the up button
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
     private void upButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
-        if(mainTabbedPane.getSelectedIndex() == 0) {
+        if (mainTabbedPane.getSelectedIndex() == 0) {
             increaseSpeedTextFieldValue();
-        } else if(currentRampTextField != null) {
+        } else if (currentRampTextField != null) {
             increaseRampTextFieldValue();
+        } else {
+            increaseCurrentLimitTextFieldValue();
         }
     }//GEN-LAST:event_upButtonActionPerformed
-    
+
     /**
      * Used for setting the current ram text field
-     * @param evt 
+     *
+     * @param evt
      */
     private void rampTextFieldFocusGained(FocusEvent evt) {//GEN-FIRST:event_rampTextFieldFocusGained
-        currentRampTextField = (JTextField)evt.getComponent();
+        currentRampTextField = (JTextField) evt.getComponent();
     }//GEN-LAST:event_rampTextFieldFocusGained
-    
+
     /**
      * Method to handle events from the down button
-     * @param evt 
+     *
+     * @param evt
      */
     private void downButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_downButtonActionPerformed
-        if(mainTabbedPane.getSelectedIndex() == 0) {
+        if (mainTabbedPane.getSelectedIndex() == 0) {
             decreaseSpeedTextFieldValue();
-        } else if(currentRampTextField != null) {
+        } else if (currentRampTextField != null) {
             decreaseRampTextFieldValue();
+        } else {
+            decreaseCurrentLimitTextFieldValue();
         }
     }//GEN-LAST:event_downButtonActionPerformed
-    
+
     /**
      * Method to start the motor spinning
-     * @param evt 
+     *
+     * @param evt
      */
     private void startButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        if(stepperPhidget == null) {
+        if (stepperPhidget == null) {
             JOptionPane.showMessageDialog(this,
-                "The SCK-200X is not connected ...",
-                "Connection Error",
-                JOptionPane.ERROR_MESSAGE);
-            
+                    "The Stepper Motor is not connected ...",
+                    "Connection Error",
+                    JOptionPane.ERROR_MESSAGE);
+
             return;
         }
-        
+
         try {
             startButton.setEnabled(false);
-            
+
             //Set up some initial acceleration and velocity values
             stepperPhidget.setAcceleration(0, accleration);
-            
+
             // set the current limit
+            currentLimit = Double.parseDouble(currentLimitTextField.getText());
             stepperPhidget.setCurrentLimit(0, currentLimit);
-            
+
             // now set the current position
             stepperPhidget.setCurrentPosition(0, 0L);
-            
+
             // set the target position to some really big number
             stepperPhidget.setTargetPosition(0, targetPosition);
-            
+
             // power-up the motor now
             System.out.println("\nEngaging Stepper Motor\n");
             stepperPhidget.setEngaged(0, true);
-            
-            if(runRampCheckBox.isSelected()) {
+
+            if (runRampCheckBox.isSelected()) {
                 // start a step seqence
                 startStepSequence();
             } else {
                 // start the timer
                 spinTimer.start();
-            
+
                 // set the speed now
                 setMotorSpeed();
             }
@@ -511,82 +526,164 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     }//GEN-LAST:event_startButtonActionPerformed
 
     /**
+     * Just set the current ramp text field to null
+     *
+     * @param evt
+     */
+    private void currentLimitTextFieldFocusGained(FocusEvent evt) {//GEN-FIRST:event_currentLimitTextFieldFocusGained
+        currentRampTextField = null;
+    }//GEN-LAST:event_currentLimitTextFieldFocusGained
+
+    /**
+     * A toggle button for connecting or disconnecting from the controller
+     *
+     * @param evt
+     */
+    private void connectToggleButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_connectToggleButtonActionPerformed
+        if (connectToggleButton.isSelected()) {
+            if (stepperPhidget != null) {
+                return;
+            }
+
+            try {
+                stepperPhidget = new StepperPhidget();
+                stepperPhidget.openAny();
+
+                System.out.println("Waiting for the Phidget Stepper to be attached...\n");
+
+                stepperPhidget.waitForAttachment();
+
+                System.out.println("Phidget Information");
+                System.out.println("================================================");
+                System.out.println("Version: " + stepperPhidget.getDeviceVersion());
+                System.out.println("Name: " + stepperPhidget.getDeviceName());
+                System.out.println("Serial #: " + stepperPhidget.getSerialNumber());
+                System.out.println("# Steppers: " + stepperPhidget.getMotorCount());
+
+                // update the UI label to indicate successful connection
+                connectLabel.setForeground(new Color(0x00, 0xC0, 0x00));
+                connectLabel.setText("Connected to SCK-200X");
+
+                // add some listeners now
+                stepperPhidget.addErrorListener(new ErrorListener() {
+                    public void error(ErrorEvent ex) {
+                        connectLabel.setText("Connection Failed ...");
+                        System.out.println("\n--->Error: " + ex.getException());
+                    }
+                });
+
+                // listener which displays the current rpm
+                stepperPhidget.addStepperVelocityChangeListener(new StepperVelocityChangeListener() {
+                    @Override
+                    public void stepperVelocityChanged(StepperVelocityChangeEvent svce) {
+                        int speed = (int) (((svce.getValue() / 16.0) / 96.0) * 60.0);
+                        spinSpeedLabel.setText(speed + " rpms");
+                    }
+                });
+            } catch (PhidgetException ex) {
+                Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            if (stepperPhidget != null) {
+                try {
+                    stepperPhidget.setEngaged(0, false);
+                    stepperPhidget.close();
+                    stepperPhidget = null;
+                } catch (PhidgetException ex) {
+                    Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_connectToggleButtonActionPerformed
+
+    /**
      * Method to run the step sequence the step sequence
      */
     private void startStepSequence() {
-        /*
         SwingWorker worker = new SwingWorker<Boolean, Void>() {
             @Override
             public Boolean doInBackground() {
                 stopMotor = false;
-                
+
                 // get the step sequences
-                String[] stepSeqences = rampProgramTextArea.getText().split("\n");
-                
+                String[] stepSeqences = getRampProgramSteps();
+
                 // interate over the lines containing the seqences
-                for(int i = 1; i < stepSeqences.length; i++) {
+                for (int i = 1; i < stepSeqences.length; i++) {
                     String[] stepInfo = stepSeqences[i].split("\\s*,\\s*");
                     String setSpeedString = stepInfo[1];
                     targetSpinTime = Integer.parseInt(stepInfo[2]);
-                    
+
                     rampStepTextField.setText(stepInfo[0] + ", " + setSpeedString + " rpms, " + targetSpinTime + " sec");
-                    
+
                     // start the motor spinning
                     spinSpeedTextField.setText(setSpeedString);
-                    spinSpeedTextFieldActionPerformed(null);
-                    
+                    changeMotorSpeedSmoothly();
+
                     // use a loop to keep track of time this step is running
                     int count = 0;
-                    while(count < targetSpinTime) {
+                    while (count < targetSpinTime) {
                         // check to if the motor was stop
-                        if(stopMotor) {
+                        if (stopMotor) {
                             rampStepTextField.setText("Sequenced Stoped ...");
                             return false;
                         }
-                        
+
                         // update the count timer
                         spinTimeLabel.setText("" + (targetSpinTime - count));
-                        
+
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        
+
                         count++;
                     }
                 }
-                
+
                 // stop the motor now
                 stopButtonActionPerformed(null);
-                
+
                 // seqeunce complete so return true
                 return true;
             }
         };
-        
+
         worker.execute();
-        */
     }
-    
+
+    /**
+     * Method to get the ramp program
+     *
+     * @return
+     */
+    private String[] getRampProgramSteps() {
+        String[] rampProgramSteps = new String[2];
+        rampProgramSteps[0] = "1," + ramp1SpeedTextField.getText() + "," + ramp1TimeTextField.getText();
+        rampProgramSteps[1] = "2," + ramp2SpeedTextField.getText() + "," + ramp2TimeTextField.getText();
+        return rampProgramSteps;
+    }
+
     /**
      * Increase the value for particular ramp text field
      */
     private void increaseSpeedTextFieldValue() {
         int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
-        int value = Integer.parseInt(speedTextField.getText());
+        int value = Integer.parseInt(spinSpeedTextField.getText());
         value += increment;
-        
+
         int maxSpeed = getMaxSpeed();
-        if(value > maxSpeed) {
-            setSpeed = maxSpeed;
-        } else {
-            setSpeed = value;
+        if (value > maxSpeed) {
+            value = maxSpeed;
         }
-        
-        setMotorSpeed();
+
+        // update the GUI now
+        spinSpeedTextField.setText("" + value);
+
+        changeMotorSpeedSmoothly();
     }
-    
+
     /**
      * Increase the value for particular ramp text field
      */
@@ -596,24 +693,34 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         value += increment;
         currentRampTextField.setText("" + value);
     }
-    
+
+    /**
+     * Increase the value for particular ramp text field
+     */
+    private void increaseCurrentLimitTextFieldValue() {
+        double increment = 0.1;
+        double value = Double.parseDouble(currentLimitTextField.getText());
+        value += increment;
+        currentLimitTextField.setText(df.format(value));
+    }
+
     /**
      * decrease the value for particular ramp text field
      */
     private void decreaseSpeedTextFieldValue() {
         int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
-        int value = Integer.parseInt(speedTextField.getText());
+        int value = Integer.parseInt(spinSpeedTextField.getText());
         value -= increment;
-        
-        if(value < 0 ) {
-            setSpeed = 0;
-        } else {
-            setSpeed = value;
+
+        if (value < 0) {
+            value = 0;
         }
-        
-        setMotorSpeed();
+
+        spinSpeedTextField.setText("" + value);
+
+        changeMotorSpeedSmoothly();
     }
-    
+
     /**
      * decrease the value for particular ramp text field
      */
@@ -623,45 +730,101 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         value -= increment;
         currentRampTextField.setText("" + value);
     }
-    
+
     /**
-     * Given an RPM reading set the speed by converting to micro-steps per second
+     * decrease the current value for the current limit text field
+     */
+    private void decreaseCurrentLimitTextFieldValue() {
+        double increment = 0.1;
+        double value = Double.parseDouble(currentLimitTextField.getText());
+        value -= increment;
+        currentLimitTextField.setText(df.format(value));
+    }
+
+    /**
+     * change the motor speed smoothly by doing it in small increments
+     *
+     * @param evt
+     */
+    private void changeMotorSpeedSmoothly() {
+        try {
+            int changeBy = 50; // how much to change the speed by
+
+            int newSpeed = Integer.parseInt(spinSpeedTextField.getText());
+
+            if (newSpeed >= setSpeed) {
+                // we need to increate is steps of 100 rpms
+                int diff = newSpeed - setSpeed;
+                while (setSpeed < newSpeed && setSpeed != 0 && diff > changeBy * 10) {
+                    setSpeed += changeBy * 2;
+                    setMotorSpeed();
+
+                    // pause a bit before increasing speed again
+                    Thread.sleep(50);
+                }
+
+                if (setSpeed != newSpeed) {
+                    setSpeed = newSpeed;
+                    setMotorSpeed();
+                }
+            } else {
+                // we need to decrese is steps of 100 rpms
+                int diff = setSpeed - newSpeed;
+                while (setSpeed > newSpeed && diff > changeBy) {
+                    setSpeed -= changeBy;
+                    setMotorSpeed();
+
+                    // pause a bit before increasing speed again
+                    Thread.sleep(50);
+                }
+
+                setSpeed = newSpeed;
+                setMotorSpeed();
+            }
+        } catch (NumberFormatException nfe) {
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Given an RPM reading set the speed by converting to micro-steps per
+     * second
      */
     public void setMotorSpeed() {
-        double rps = setSpeed/60.0; // rounds per second 
-        double sps = rps*96.0;      // steps per second 
-        long msps = (long)sps*16;   // get the microsteps per second needed
-        
+        double rps = setSpeed / 60.0; // rounds per second 
+        double sps = rps * 96.0;      // steps per second 
+        long msps = (long) sps * 16;   // get the microsteps per second needed
+
         System.out.println("RPM: " + setSpeed + ", Microsteps/sec: " + msps);
-        
-        if(stepperPhidget != null) {
+
+        if (stepperPhidget != null) {
             try {
                 stepperPhidget.setVelocityLimit(0, msps);
             } catch (PhidgetException ex) {
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        // update the GUI now
-        speedTextField.setText("" + setSpeed);
     }
-    
+
     /**
      * Method to return the maximum speed
-     * 
-     * @return 
+     *
+     * @return
      */
     private int getMaxSpeed() {
-       return Integer.parseInt(maxSpeedTextField.getText());
+        return Integer.parseInt(maxSpeedTextField.getText());
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JLabel connectLabel;
     private JToggleButton connectToggleButton;
+    private JTextField currentLimitTextField;
     private JButton downButton;
     private JComboBox incrementComboBox;
     private JLabel jLabel1;
     private JLabel jLabel10;
+    private JLabel jLabel11;
     private JLabel jLabel2;
     private JLabel jLabel3;
     private JLabel jLabel4;
@@ -669,7 +832,6 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private JLabel jLabel6;
     private JLabel jLabel7;
     private JLabel jLabel8;
-    private JLabel jLabel9;
     private JPanel jPanel1;
     private JPanel jPanel2;
     private JPanel jPanel3;
@@ -681,13 +843,11 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private JTextField ramp1TimeTextField;
     private JTextField ramp2SpeedTextField;
     private JTextField ramp2TimeTextField;
-    private JTextField ramp3SpeedTextField;
-    private JTextField ramp3TimeTextField;
-    private JTextField rampTextField;
+    private JTextField rampStepTextField;
     private JComboBox rotationComboBox;
     private JCheckBox runRampCheckBox;
-    private JTextField speedTextField;
     private JLabel spinSpeedLabel;
+    private JTextField spinSpeedTextField;
     private JLabel spinTimeLabel;
     private JButton startButton;
     private JButton stopButton;
