@@ -75,6 +75,9 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JTabbedPane" name="mainTabbedPane">
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="mainTabbedPaneStateChanged"/>
+      </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
           <BorderConstraints direction="Center"/>
@@ -114,6 +117,9 @@
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="0" green="0" red="ff" type="rgb"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Not Connected"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
@@ -155,12 +161,13 @@
                   <Font name="Tahoma" size="14" style="1"/>
                 </Property>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="5">
+                  <StringArray count="6">
                     <StringItem index="0" value="1"/>
                     <StringItem index="1" value="10"/>
                     <StringItem index="2" value="20"/>
                     <StringItem index="3" value="50"/>
                     <StringItem index="4" value="100"/>
+                    <StringItem index="5" value="500"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -191,6 +198,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Ramp"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runRampCheckBoxActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JTextField" name="rampStepTextField">
               <Properties>
@@ -234,7 +244,7 @@
                     <Property name="toolTipText" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="rotationComboBox">
+                <Component class="javax.swing.JComboBox" name="directionComboBox">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Tahoma" size="14" style="1"/>
@@ -246,6 +256,9 @@
                       </StringArray>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="directionComboBoxActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="createSimpleCombobox();"/>
                   </AuxValues>
