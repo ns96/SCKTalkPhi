@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.instras.com;
+package com.instras;
 
 import com.phidgets.PhidgetException;
 import com.phidgets.StepperPhidget;
@@ -152,7 +152,6 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("SCKTalkPhi v1.1.0 (01/15/2015)");
-        setPreferredSize(new java.awt.Dimension(600, 470));
 
         exitButton.setText("EXIT");
         exitButton.addActionListener(new java.awt.event.ActionListener() {
