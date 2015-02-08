@@ -30,6 +30,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author Nathan Stevens
  */
 public class SCKTalkPhi {
+    public static final String VERSION = "SCKTalkPhi v1.2.0 (02/08/2015)";
 
     /**
      * Main method where either the desktop or frame for the Raspberry PiTFT is
@@ -86,5 +87,4 @@ public class SCKTalkPhi {
             }
         });
     }
-
 }

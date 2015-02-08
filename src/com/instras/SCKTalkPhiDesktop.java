@@ -70,6 +70,9 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     public SCKTalkPhiDesktop() {
         initComponents();
         
+        // set the title of the frame now
+        setTitle(SCKTalkPhi.VERSION);
+        
         // create a timer object for count seconds the motor is spining
         spinTimer = new Timer(1000, new ActionListener() {
             @Override
@@ -151,7 +154,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         jLabel14.setText("Max Speed");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("SCKTalkPhi v1.1.0 (01/15/2015)");
+        setTitle("SCKTalkPhi");
 
         exitButton.setText("EXIT");
         exitButton.addActionListener(new java.awt.event.ActionListener() {

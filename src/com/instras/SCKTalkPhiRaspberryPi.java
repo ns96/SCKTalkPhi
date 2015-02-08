@@ -61,9 +61,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author nathan
  */
-public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
-    private final String VERSION = "SCKTalkPhi v1.2 (01/27/2015)";
-            
+public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {        
     // need to make this global since on the rPi touch screen 
     // we don't have a keyboard to enter values
     private JTextField currentRampTextField;
@@ -530,7 +528,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         // check to see if the controller board is connected. Return if its not
         if (stepperPhidget == null) {
             JOptionPane.showMessageDialog(this,
-                    "The Stepper Motor is not connected ...\n\n" + VERSION,
+                    "The Stepper Motor is not connected ...\n\n" + SCKTalkPhi.VERSION,
                     "Connection Error",
                     JOptionPane.ERROR_MESSAGE);
 
