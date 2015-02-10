@@ -981,7 +981,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 frame.setSize(320, 240);
                 frame.setResizable(false);
                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
+                frame.setTitle("Raspberry Pi GUI");
+                
                 // add the GUI panel now
                 frame.add(sckTalkPhiRaspberryPi);
 
