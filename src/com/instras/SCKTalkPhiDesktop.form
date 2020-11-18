@@ -119,7 +119,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <EmptySpace min="0" pref="29" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="24" max="32767" attributes="0"/>
                       <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -277,17 +277,15 @@
                       <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="currentPositionTextField" max="32767" attributes="0"/>
                       <Component id="accelarationTextField" max="32767" attributes="0"/>
                       <Component id="currentLimitTextField" max="32767" attributes="0"/>
-                      <Component id="targetPositionTextField" alignment="0" max="32767" attributes="0"/>
-                      <Component id="directionComboBox" alignment="0" pref="141" max="32767" attributes="0"/>
+                      <Component id="rescaleFactorTextField" alignment="0" max="32767" attributes="0"/>
+                      <Component id="directionComboBox" alignment="0" max="32767" attributes="0"/>
                       <Component id="maxSpinSpeedTextField" alignment="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -305,17 +303,12 @@
                       <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="currentLimitTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-                      <Component id="targetPositionTextField" min="-2" max="-2" attributes="0"/>
+                      <Component id="rescaleFactorTextField" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="currentPositionTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="maxSpinSpeedTextField" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -333,18 +326,21 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Accelaration"/>
+            <Property name="text" type="java.lang.String" value="Accelaration (rpms/sec)"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="accelarationTextField">
           <Properties>
-            <Property name="text" type="java.lang.String" value="5000"/>
+            <Property name="text" type="java.lang.String" value="1500"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="accelarationTextFieldActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel5">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Current Limit"/>
+            <Property name="text" type="java.lang.String" value="Current Limit (A)"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="currentLimitTextField">
@@ -357,24 +353,13 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel6">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Target Position"/>
+            <Property name="text" type="java.lang.String" value="Rescale Factor"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="targetPositionTextField">
+        <Component class="javax.swing.JTextField" name="rescaleFactorTextField">
           <Properties>
-            <Property name="text" type="java.lang.String" value="1000000000"/>
-            <Property name="toolTipText" type="java.lang.String" value=""/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel7">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Current Position"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JTextField" name="currentPositionTextField">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="0"/>
+            <Property name="text" type="java.lang.String" value="0.000"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
         </Component>
@@ -399,12 +384,13 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel15">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Max Speed"/>
+            <Property name="text" type="java.lang.String" value="Max Speed (rpms)"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="maxSpinSpeedTextField">
           <Properties>
-            <Property name="text" type="java.lang.String" value="5000"/>
+            <Property name="text" type="java.lang.String" value="9000"/>
+            <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
         </Component>
       </SubComponents>

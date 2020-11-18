@@ -16,12 +16,7 @@
  */
 package com.instras;
 
-import com.phidgets.PhidgetException;
-import com.phidgets.StepperPhidget;
-import com.phidgets.event.ErrorEvent;
-import com.phidgets.event.ErrorListener;
-import com.phidgets.event.StepperVelocityChangeEvent;
-import com.phidgets.event.StepperVelocityChangeListener;
+import com.phidget22.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -67,14 +62,10 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private JTextField currentRampTextField;
 
     // this object handle talking to the motor control board
-    private StepperPhidget stepperPhidget;
-
-    // The position target to move to. This must be a very big number to 
-    // keep motor turning continuesly
-    private long targetPosition = 10000000000L;
+    private Stepper stepperPhidget;
 
     // this specifies how fast the motor should accelarate
-    private long acceleration = 5000L;
+    private double acceleration = 1500; // rpms per sec
 
     // the current limit of 1.0
     private double currentLimit = 1.0;
@@ -84,7 +75,10 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
     // The spin speed to set
     private int setSpeed = 0;
-
+    
+    // used to move the motor in correct direction 1 = CW, -1 = CCW
+    private int direction = 1;
+    
     // the time object for count seconds
     private Timer spinTimer = null;
 
@@ -451,7 +445,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
         try {
             if (stepperPhidget != null) {
-                stepperPhidget.setEngaged(0, false);
+                stepperPhidget.setEngaged(false);
             }
 
             spinTimer.stop();
@@ -540,21 +534,15 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             startButton.setEnabled(false);
 
             //Set up some initial acceleration and velocity values
-            stepperPhidget.setAcceleration(0, acceleration);
+            stepperPhidget.setAcceleration(acceleration);
 
             // set the current limit
             currentLimit = Double.parseDouble(currentLimitTextField.getText());
-            stepperPhidget.setCurrentLimit(0, currentLimit);
-
-            // now set the current position
-            stepperPhidget.setCurrentPosition(0, 0L);
-
-            // set the target position to some really big number
-            stepperPhidget.setTargetPosition(0, targetPosition);
+            stepperPhidget.setCurrentLimit(currentLimit);
 
             // power-up the motor now
             System.out.println("\nEngaging Stepper Motor\n");
-            stepperPhidget.setEngaged(0, true);
+            stepperPhidget.setEngaged(true);
 
             if (runRampCheckBox.isSelected()) {
                 // start a step seqence
@@ -592,24 +580,49 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             }
 
             try {
-                stepperPhidget = new StepperPhidget();
-                stepperPhidget.openAny();
-
+                stepperPhidget = new Stepper();
                 System.out.println("Waiting for the Phidget Stepper to be attached...\n");
 
-                stepperPhidget.waitForAttachment();
+                stepperPhidget.open(Phidget.DEFAULT_TIMEOUT);
+            
+                // set the scaling factor and control mode to RUN 
+                // so we are in continous rotation mode
+                double rescaleFactor = SCKTalkPhi.SCALE_FACTOR;
+                stepperPhidget.setRescaleFactor(rescaleFactor);
+                stepperPhidget.setControlMode(StepperControlMode.RUN);
 
                 System.out.println("Phidget Information");
                 System.out.println("================================================");
                 System.out.println("Version: " + stepperPhidget.getDeviceVersion());
                 System.out.println("Name: " + stepperPhidget.getDeviceName());
-                System.out.println("Serial #: " + stepperPhidget.getSerialNumber());
-                System.out.println("# Steppers: " + stepperPhidget.getMotorCount());
+                System.out.println("Serial #: " + stepperPhidget.getDeviceSerialNumber());
 
                 // update the UI label to indicate successful connection
                 connectLabel.setForeground(new Color(0x00, 0xC0, 0x00));
                 connectLabel.setText("Connected ...");
-
+                
+                // update the UI label to indicate successful connection
+                connectLabel.setForeground(new Color(0x00, 0xC0, 0x00));
+                connectLabel.setText("Connected to SCK-300S+");
+            
+                // add some listeners now
+                stepperPhidget.addErrorListener(new ErrorListener() {
+                    public void onError(ErrorEvent ex) {
+                        connectLabel.setText("Connection Failed ...");
+                        System.out.println("\n--->Error: " + ex.getDescription());
+                    }
+                });
+            
+                // listener which displays the current rpm
+                stepperPhidget.addVelocityChangeListener(new StepperVelocityChangeListener() {
+                    @Override
+                    public void onVelocityChange(StepperVelocityChangeEvent svce) {
+                        long speed = Math.round(svce.getVelocity());
+                        spinSpeedLabel.setText(speed + " rpms");
+                    }
+                });
+                
+                /**
                 // add some listeners now
                 stepperPhidget.addErrorListener(new ErrorListener() {
                     public void error(ErrorEvent ex) {
@@ -626,6 +639,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                         spinSpeedLabel.setText(speed + " rpms");
                     }
                 });
+                */
             } catch (PhidgetException ex) {
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -635,7 +649,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             
             if (stepperPhidget != null) {
                 try {
-                    stepperPhidget.setEngaged(0, false);
+                    stepperPhidget.setEngaged(false);
                     stepperPhidget.close();
                     stepperPhidget = null;
                 } catch (PhidgetException ex) {
@@ -652,9 +666,9 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
      */
     private void directionComboBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_directionComboBoxActionPerformed
         if(directionComboBox.getSelectedIndex() == 0) {
-            targetPosition = Math.abs(targetPosition);
+            direction = 1;
         } else {
-            targetPosition = -targetPosition;
+            direction = -1;
         }
     }//GEN-LAST:event_directionComboBoxActionPerformed
     
@@ -879,15 +893,18 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
      * second
      */
     public void setMotorSpeed() {
+        /**
         double rps = setSpeed / 60.0; // rounds per second 
         double sps = rps * 96.0;      // steps per second 
         long msps = (long) sps * 16;   // get the microsteps per second needed
-
-        System.out.println("RPM: " + setSpeed + ", Microsteps/sec: " + msps);
+        * */
+        
+        System.out.println("RPM: " + setSpeed);
 
         if (stepperPhidget != null) {
             try {
-                stepperPhidget.setVelocityLimit(0, msps);
+                double speed = direction*setSpeed;
+                stepperPhidget.setVelocityLimit(speed);
             } catch (PhidgetException ex) {
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
             }

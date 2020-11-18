@@ -28,10 +28,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 /**
  *
  * @author Nathan Stevens
+ * @version 2.0.0 11/17/2020
  */
 public class SCKTalkPhi {
-    public static final String VERSION = "SCKTalkPhi v1.2.0 (02/08/2015)";
+    public static final String VERSION = "SCKTalkPhi v2.0.0 (11/17/2020)";
 
+    // the scaling factor which converts everything into rpm with the SCK-300S+
+    public static final double SCALE_FACTOR = 0.0395;
     /**
      * Main method where either the desktop or frame for the Raspberry PiTFT is
      * called.

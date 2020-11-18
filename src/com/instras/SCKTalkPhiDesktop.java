@@ -18,14 +18,7 @@
 
 package com.instras;
 
-import com.phidgets.PhidgetException;
-import com.phidgets.StepperPhidget;
-import com.phidgets.event.ErrorEvent;
-import com.phidgets.event.ErrorListener;
-import com.phidgets.event.StepperPositionChangeEvent;
-import com.phidgets.event.StepperPositionChangeListener;
-import com.phidgets.event.StepperVelocityChangeEvent;
-import com.phidgets.event.StepperVelocityChangeListener;
+import com.phidget22.*;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,21 +31,20 @@ import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 /**
- * A simple program to control the SCK-200X spin coater kit
- * 
+ * A simple program to control the SCK-300S+ spin coater kit
+ * which uses the PhidgetStepper Bipolar HC (https://www.phidgets.com/?tier=3&catid=23&pcid=20&prodid=66)
  * @author Nathan Stevens
- * @version 1.0 03/02/2013
+ * @version 2.0 11/17/2020
  */
 public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     // this object handle talking to the motor control board
-    private StepperPhidget stepperPhidget;
-    
-    // The position target to move to. This must be a very big number to 
-    // keep motor turning continuesly
-    private long targetPosition = 10000000L;
-    
+    private Stepper stepperPhidget;
+        
     // The spin speed to set
     private int setSpeed = 0;
+    
+    // used to move the motor in correct direction 1 = CW, -1 = CCW
+    private int direction = 1;
     
     // the time object for count seconds
     private Timer spinTimer = null;
@@ -72,6 +64,9 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         
         // set the title of the frame now
         setTitle(SCKTalkPhi.VERSION);
+        
+        // set the scaling factor
+        rescaleFactorTextField.setText("" + SCKTalkPhi.SCALE_FACTOR);
         
         // create a timer object for count seconds the motor is spining
         spinTimer = new Timer(1000, new ActionListener() {
@@ -132,9 +127,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         currentLimitTextField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        targetPositionTextField = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        currentPositionTextField = new javax.swing.JTextField();
+        rescaleFactorTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         directionComboBox = new javax.swing.JComboBox();
         jLabel15 = new javax.swing.JLabel();
@@ -221,12 +214,17 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Advance Settings"));
 
-        jLabel4.setText("Accelaration");
+        jLabel4.setText("Accelaration (rpms/sec)");
 
-        accelarationTextField.setText("5000");
+        accelarationTextField.setText("1500");
         accelarationTextField.setToolTipText("");
+        accelarationTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accelarationTextFieldActionPerformed(evt);
+            }
+        });
 
-        jLabel5.setText("Current Limit");
+        jLabel5.setText("Current Limit (A)");
 
         currentLimitTextField.setText("1.0");
         currentLimitTextField.addActionListener(new java.awt.event.ActionListener() {
@@ -235,16 +233,11 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             }
         });
 
-        jLabel6.setText("Target Position");
+        jLabel6.setText("Rescale Factor");
         jLabel6.setToolTipText("");
 
-        targetPositionTextField.setText("1000000000");
-        targetPositionTextField.setToolTipText("");
-
-        jLabel7.setText("Current Position");
-
-        currentPositionTextField.setText("0");
-        currentPositionTextField.setToolTipText("");
+        rescaleFactorTextField.setText("0.000");
+        rescaleFactorTextField.setToolTipText("");
 
         jLabel8.setText("Rotation");
         jLabel8.setToolTipText("");
@@ -256,9 +249,10 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             }
         });
 
-        jLabel15.setText("Max Speed");
+        jLabel15.setText("Max Speed (rpms)");
 
-        maxSpinSpeedTextField.setText("5000");
+        maxSpinSpeedTextField.setText("9000");
+        maxSpinSpeedTextField.setToolTipText("");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -269,16 +263,14 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(jLabel5)
                     .addComponent(jLabel6)
-                    .addComponent(jLabel7)
                     .addComponent(jLabel8)
                     .addComponent(jLabel15))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(currentPositionTextField)
                     .addComponent(accelarationTextField)
                     .addComponent(currentLimitTextField)
-                    .addComponent(targetPositionTextField)
-                    .addComponent(directionComboBox, 0, 141, Short.MAX_VALUE)
+                    .addComponent(rescaleFactorTextField)
+                    .addComponent(directionComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(maxSpinSpeedTextField)))
         );
         jPanel1Layout.setVerticalGroup(
@@ -291,15 +283,11 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(currentLimitTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel6)
-                    .addComponent(targetPositionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(currentPositionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(rescaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
                     .addComponent(maxSpinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -429,7 +417,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 29, Short.MAX_VALUE)
+                        .addGap(0, 24, Short.MAX_VALUE)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -473,7 +461,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         if(stepperPhidget == null) {
             JOptionPane.showMessageDialog(this,
-                "The SCK-200X is not connected ...",
+                "The SCK-300S+ is not connected ...",
                 "Connection Error",
                 JOptionPane.ERROR_MESSAGE);
             
@@ -484,25 +472,19 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             startButton.setEnabled(false);
             
             //Set up some initial acceleration and velocity values
-            Long accleration = new Long(accelarationTextField.getText());
-            stepperPhidget.setAcceleration(0, accleration);
+            Double accleration = new Double(accelarationTextField.getText());
+            stepperPhidget.setAcceleration(accleration);
             
             // set the current limit
-            stepperPhidget.setCurrentLimit(0, Double.parseDouble(currentLimitTextField.getText()));
+            stepperPhidget.setCurrentLimit(Double.parseDouble(currentLimitTextField.getText()));
             
-            // now set the current position
-            stepperPhidget.setCurrentPosition(0, 0L);
-            
-            // set the target position to some really big number
-            targetPosition = new Long(targetPositionTextField.getText());
-            stepperPhidget.setTargetPosition(0, targetPosition);
-            
+                        
             // set the spin time
             spinTimeTextFieldActionPerformed(null);
             
             // power-up the motor now
             System.out.println("\nEngaging Stepper Motor\n");
-            stepperPhidget.setEngaged(0, true);
+            stepperPhidget.setEngaged(true);
             
             if(runRampSequenceCheckBox.isSelected()) {
                 // start a step seqence
@@ -583,7 +565,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         if(stepperPhidget != null) {
             try {
-                stepperPhidget.setEngaged(0, false);
+                stepperPhidget.setEngaged(false);
                 stepperPhidget.close();
             } catch (PhidgetException ex) {
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
@@ -603,46 +585,41 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             return;
         }
         try {
-            stepperPhidget = new StepperPhidget();
-            stepperPhidget.openAny();
+            stepperPhidget = new Stepper();
             
             System.out.println("Waiting for the Phidget Stepper to be attached...\n");
-            stepperPhidget.waitForAttachment();
+            stepperPhidget.open(Phidget.DEFAULT_TIMEOUT);
+            
+            // set the scaling factor and control mode to RUN 
+            // so we are in continous rotation mode
+            double rescaleFactor = Double.parseDouble(rescaleFactorTextField.getText());
+            stepperPhidget.setRescaleFactor(rescaleFactor);
+            stepperPhidget.setControlMode(StepperControlMode.RUN);
             
             System.out.println("Phidget Information");
             System.out.println("================================================");
             System.out.println("Version: " + stepperPhidget.getDeviceVersion());
             System.out.println("Name: " + stepperPhidget.getDeviceName());
-            System.out.println("Serial #: " + stepperPhidget.getSerialNumber());
-            System.out.println("# Steppers: " + stepperPhidget.getMotorCount());
+            System.out.println("Serial #: " + stepperPhidget.getDeviceSerialNumber());
             
             // update the UI label to indicate successful connection
             connectLabel.setForeground(new Color(0x00, 0xC0, 0x00));
-            connectLabel.setText("Connected to SCK-200X");
+            connectLabel.setText("Connected to SCK-300S+");
             
             // add some listeners now
             stepperPhidget.addErrorListener(new ErrorListener() {
-                public void error(ErrorEvent ex) {
+                public void onError(ErrorEvent ex) {
                     connectLabel.setText("Connection Failed ...");
-                    System.out.println("\n--->Error: " + ex.getException());
+                    System.out.println("\n--->Error: " + ex.getDescription());
                 }
             });
             
             // listener which displays the current rpm
-            stepperPhidget.addStepperVelocityChangeListener(new StepperVelocityChangeListener() {
+            stepperPhidget.addVelocityChangeListener(new StepperVelocityChangeListener() {
                 @Override
-                public void stepperVelocityChanged(StepperVelocityChangeEvent svce) {
-                    int speed = (int)(((svce.getValue()/16.0)/96.0)*60.0);
+                public void onVelocityChange(StepperVelocityChangeEvent svce) {
+                    long speed = Math.round(svce.getVelocity());
                     spinSpeedLabel.setText(speed + " rpms");
-                }
-            });
-            
-            // listener to update the position
-            stepperPhidget.addStepperPositionChangeListener(new StepperPositionChangeListener() {
-                @Override
-                public void stepperPositionChanged(StepperPositionChangeEvent spce) {
-                    double position = spce.getValue();
-                    currentPositionTextField.setText("" + position);
                 }
             });
         } catch (PhidgetException ex) {
@@ -704,7 +681,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         
         try {
             if(stepperPhidget != null) {
-                stepperPhidget.setEngaged(0, false);
+                stepperPhidget.setEngaged(false);
             }
             
             spinTimer.stop();
@@ -764,7 +741,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         try {
             double current = Double.parseDouble(currentLimitTextField.getText());
             System.out.println("Setting Current To: " + current);
-            stepperPhidget.setCurrentLimit(0, current);
+            stepperPhidget.setCurrentLimit(current);
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -788,9 +765,9 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
      */
     private void directionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directionComboBoxActionPerformed
         if(directionComboBox.getSelectedIndex() == 0) {
-            targetPositionTextField.setText("" + targetPosition);
+            direction = 1;
         } else {
-            targetPositionTextField.setText("-" + targetPosition);
+            direction = -1;
         }
     }//GEN-LAST:event_directionComboBoxActionPerformed
     
@@ -801,20 +778,25 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private void rampStepTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rampStepTextFieldActionPerformed
         startStepSequence();
     }//GEN-LAST:event_rampStepTextFieldActionPerformed
+
+    private void accelarationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accelarationTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_accelarationTextFieldActionPerformed
     
     /**
      * Given an RPM reading set the speed by converting to micro-steps per second
      */
     public void setMotorSpeed() {
-        double rps = setSpeed/60.0; // rounds per second 
-        double sps = rps*96.0;      // steps per second 
-        long msps = (long)sps*16;   // get the microsteps per second needed
+        //double rps = setSpeed/60.0; // rounds per second 
+        //double sps = rps*96.0;      // steps per second 
+        //long msps = (long)sps*16;   // get the microsteps per second needed
         
-        System.out.println("RPM: " + setSpeed + ", Microsteps/sec: " + msps);
+        System.out.println("RPM: " + setSpeed);
         
         if(stepperPhidget != null) {
             try {
-                stepperPhidget.setVelocityLimit(0, msps);
+                double speed = direction*setSpeed;
+                stepperPhidget.setVelocityLimit(speed);
             } catch (PhidgetException ex) {
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -826,7 +808,6 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private javax.swing.JButton connectButton;
     private javax.swing.JLabel connectLabel;
     private javax.swing.JTextField currentLimitTextField;
-    private javax.swing.JTextField currentPositionTextField;
     private javax.swing.JComboBox directionComboBox;
     private javax.swing.JButton downButton;
     private javax.swing.JButton exitButton;
@@ -842,13 +823,13 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField maxSpinSpeedTextField;
     private javax.swing.JTextArea rampProgramTextArea;
     private javax.swing.JTextField rampStepTextField;
+    private javax.swing.JTextField rescaleFactorTextField;
     private javax.swing.JCheckBox runRampSequenceCheckBox;
     private javax.swing.JLabel spinSpeedLabel;
     private javax.swing.JTextField spinSpeedTextField;
@@ -856,7 +837,6 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private javax.swing.JTextField spinTimeTextField;
     private javax.swing.JButton startButton;
     private javax.swing.JButton stopButton;
-    private javax.swing.JTextField targetPositionTextField;
     private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 }
