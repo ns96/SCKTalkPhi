@@ -214,7 +214,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Advance Settings"));
 
-        jLabel4.setText("Accelaration (rpms/sec)");
+        jLabel4.setText("Accelaration (rpms/s)");
 
         accelarationTextField.setText("1500");
         accelarationTextField.setToolTipText("");
@@ -238,6 +238,11 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
 
         rescaleFactorTextField.setText("0.000");
         rescaleFactorTextField.setToolTipText("");
+        rescaleFactorTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rescaleFactorTextFieldActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Rotation");
         jLabel8.setToolTipText("");
@@ -251,6 +256,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
 
         jLabel15.setText("Max Speed (rpms)");
 
+        maxSpinSpeedTextField.setEditable(false);
         maxSpinSpeedTextField.setText("9000");
         maxSpinSpeedTextField.setToolTipText("");
 
@@ -325,7 +331,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
 
         rampProgramTextArea.setColumns(20);
         rampProgramTextArea.setRows(5);
-        rampProgramTextArea.setText("STEP #, RPM, Dwell Time (s)\n1, 500, 25\n2, 1500, 30\n3, 2500, 30\n4, 100, 15");
+        rampProgramTextArea.setText("STEP #, RPM, Dwell Time (s)\n1, 500, 25\n2, 3500, 30\n3, 1000, 15\n4, 0, 10\n5, 3250, 20");
         jScrollPane2.setViewportView(rampProgramTextArea);
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -381,11 +387,11 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(incrementComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(0, 8, Short.MAX_VALUE)))
+                                        .addGap(0, 13, Short.MAX_VALUE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(runRampSequenceCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel11)
@@ -477,8 +483,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             
             // set the current limit
             stepperPhidget.setCurrentLimit(Double.parseDouble(currentLimitTextField.getText()));
-            
-                        
+                       
             // set the spin time
             spinTimeTextFieldActionPerformed(null);
             
@@ -623,6 +628,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 }
             });
         } catch (PhidgetException ex) {
+            connectLabel.setText("Connection Failed ...");
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_connectButtonActionPerformed
@@ -637,6 +643,12 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             int changeBy = 50; // how much to change the speed by
                     
             int newSpeed = Integer.parseInt(spinSpeedTextField.getText());
+            
+            /* DEBUG Code
+            setSpeed = newSpeed;
+            setMotorSpeed();
+            Thread.sleep(50);
+            */
             
             if(newSpeed >= setSpeed) {
                 // we need to increate is steps of 100 rpms
@@ -654,20 +666,22 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                     setMotorSpeed();
                 }
             } else {
-                // we need to decrese is steps of 100 rpms
+                changeBy = changeBy/2;
+                
+                // we need to decrease in steps of 50 rpms
                 int diff = setSpeed - newSpeed;
                 while (setSpeed > newSpeed && diff > changeBy) {
                     setSpeed -= changeBy;
                     setMotorSpeed();
                     
-                    // pause a bit before increasing speed again
-                    Thread.sleep(50);
+                    // pause a bit before decrease the speed again
+                    Thread.sleep(25);
                 }
                 
                 setSpeed = newSpeed;
                 setMotorSpeed();
             }
-        } catch(NumberFormatException nfe) { } catch (InterruptedException ex) {
+        } catch(NumberFormatException | InterruptedException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_spinSpeedTextFieldActionPerformed
@@ -780,8 +794,22 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     }//GEN-LAST:event_rampStepTextFieldActionPerformed
 
     private void accelarationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accelarationTextFieldActionPerformed
-        // TODO add your handling code here:
+        try {
+            Double accleration = new Double(accelarationTextField.getText());
+            stepperPhidget.setAcceleration(accleration);
+        } catch (PhidgetException ex) {
+            Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_accelarationTextFieldActionPerformed
+
+    private void rescaleFactorTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rescaleFactorTextFieldActionPerformed
+        try {
+            double rescaleFactor = Double.parseDouble(rescaleFactorTextField.getText());
+            stepperPhidget.setRescaleFactor(rescaleFactor);
+        } catch (PhidgetException ex) {
+            Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_rescaleFactorTextFieldActionPerformed
     
     /**
      * Given an RPM reading set the speed by converting to micro-steps per second
@@ -791,13 +819,22 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         //double sps = rps*96.0;      // steps per second 
         //long msps = (long)sps*16;   // get the microsteps per second needed
         
-        System.out.println("RPM: " + setSpeed);
+        System.out.println("Set RPM: " + setSpeed);
         
         if(stepperPhidget != null) {
             try {
-                double speed = direction*setSpeed;
-                stepperPhidget.setVelocityLimit(speed);
-            } catch (PhidgetException ex) {
+                if(setSpeed == 0) {
+                    // disencage the motor and encage it again to fix bug
+                    stepperPhidget.setVelocityLimit(setSpeed);
+                    stepperPhidget.setEngaged(false);
+                    Thread.sleep(50);
+                    stepperPhidget.setEngaged(true);
+                }
+                else {
+                    double speed = direction*setSpeed;
+                    stepperPhidget.setVelocityLimit(speed);
+                }
+            } catch (PhidgetException | InterruptedException ex) {
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

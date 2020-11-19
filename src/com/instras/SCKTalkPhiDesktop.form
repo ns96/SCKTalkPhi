@@ -69,7 +69,7 @@
                                           </Group>
                                           <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="8" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="13" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -77,7 +77,7 @@
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="runRampSequenceCheckBox" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jScrollPane2" alignment="1" pref="241" max="32767" attributes="0"/>
+                          <Component id="jScrollPane2" alignment="1" pref="247" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
@@ -326,7 +326,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Accelaration (rpms/sec)"/>
+            <Property name="text" type="java.lang.String" value="Accelaration (rpms/s)"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="accelarationTextField">
@@ -362,6 +362,9 @@
             <Property name="text" type="java.lang.String" value="0.000"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rescaleFactorTextFieldActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel8">
           <Properties>
@@ -389,6 +392,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="maxSpinSpeedTextField">
           <Properties>
+            <Property name="editable" type="boolean" value="false"/>
             <Property name="text" type="java.lang.String" value="9000"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
@@ -450,7 +454,7 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="STEP #, RPM, Dwell Time (s)&#xa;1, 500, 25&#xa;2, 1500, 30&#xa;3, 2500, 30&#xa;4, 100, 15"/>
+            <Property name="text" type="java.lang.String" value="STEP #, RPM, Dwell Time (s)&#xa;1, 500, 25&#xa;2, 3500, 30&#xa;3, 1000, 15&#xa;4, 0, 10&#xa;5, 3250, 20"/>
           </Properties>
         </Component>
       </SubComponents>

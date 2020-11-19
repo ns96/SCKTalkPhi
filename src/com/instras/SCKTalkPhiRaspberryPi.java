@@ -298,12 +298,18 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jLabel10.setText("Max Speed");
         jPanel3.add(jLabel10);
 
+        maxSpeedTextField.setEditable(false);
         maxSpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
-        maxSpeedTextField.setText("5000");
+        maxSpeedTextField.setText("8000");
         maxSpeedTextField.setToolTipText("");
         maxSpeedTextField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
                 rampTextFieldFocusGained(evt);
+            }
+        });
+        maxSpeedTextField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                maxSpeedTextFieldActionPerformed(evt);
             }
         });
         jPanel3.add(maxSpeedTextField);
@@ -641,6 +647,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 });
                 */
             } catch (PhidgetException ex) {
+                connectLabel.setText("Connection Failed ...");
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
@@ -696,6 +703,10 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private void runRampCheckBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_runRampCheckBoxActionPerformed
         System.out.println("Disable start and stop button");
     }//GEN-LAST:event_runRampCheckBoxActionPerformed
+
+    private void maxSpeedTextFieldActionPerformed(ActionEvent evt) {//GEN-FIRST:event_maxSpeedTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_maxSpeedTextFieldActionPerformed
 
     /**
      * Method to run the step sequence the step sequence
