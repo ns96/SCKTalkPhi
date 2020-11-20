@@ -31,7 +31,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @version 2.0.0 11/17/2020
  */
 public class SCKTalkPhi {
-    public static final String VERSION = "SCKTalkPhi v2.0.0B (11/19/2020)";
+    public static final String VERSION = "SCKTalkPhi v2.0.0 (11/20/2020)";
 
     // the scaling factor which converts everything into rpm with the SCK-300S+
     public static final double SCALE_FACTOR = 0.039;

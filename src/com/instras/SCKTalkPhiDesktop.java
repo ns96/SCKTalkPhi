@@ -510,13 +510,15 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
      * Method to run the step sequence the step sequence
      */
     private void startStepSequence() {
+        // check that the sequence is good
+        final String[] stepSeqences = checkStepSequences();
+        if(stepSeqences == null) { return; }
+        
+        // create a swing work to run the sequence in the background
         SwingWorker worker = new SwingWorker<Boolean, Void>() {
             @Override
             public Boolean doInBackground() {
                 stopMotor = false;
-                
-                // get the step sequences
-                String[] stepSeqences = rampProgramTextArea.getText().split("\n");
                 
                 // interate over the lines containing the seqences
                 for(int i = 1; i < stepSeqences.length; i++) {
@@ -561,6 +563,38 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         };
         
         worker.execute();
+    }
+    
+    /**
+     * Check that the step sequence has no errors
+     * 
+     * @return a string array containing the step sequence  
+     */
+    private String[] checkStepSequences() {
+        String[] stepSeqences = rampProgramTextArea.getText().split("\n");
+
+        // interate over the lines containing the seqences
+        for (int i = 1; i < stepSeqences.length; i++) {
+            String[] stepInfo = stepSeqences[i].split("\\s*,\\s*");
+            String step = stepInfo[0];
+            
+            try {
+                int speed = Integer.parseInt(stepInfo[1]);
+                int time = Integer.parseInt(stepInfo[2]);
+
+                System.out.println("Checked: " + step + ", " + speed + " rpms, " + time + " sec");
+            } catch(NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(this,
+                    "There is an error in step sequence #" + step + ". Please dobule check ...",
+                    "Step Sequence Error",
+                    JOptionPane.ERROR_MESSAGE);
+                
+                stepSeqences = null;
+                break;
+            }
+        }
+        
+        return stepSeqences;
     }
     
     /**
@@ -794,6 +828,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     }//GEN-LAST:event_rampStepTextFieldActionPerformed
 
     private void accelarationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accelarationTextFieldActionPerformed
+        if(stepperPhidget == null) return;
+        
         try {
             Double accleration = new Double(accelarationTextField.getText());
             stepperPhidget.setAcceleration(accleration);
@@ -803,6 +839,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     }//GEN-LAST:event_accelarationTextFieldActionPerformed
 
     private void rescaleFactorTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rescaleFactorTextFieldActionPerformed
+        if(stepperPhidget == null) return;
+        
         try {
             double rescaleFactor = Double.parseDouble(rescaleFactorTextField.getText());
             stepperPhidget.setRescaleFactor(rescaleFactor);
