@@ -24,11 +24,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileSystemView;
 
 /**
  * A simple program to control the SCK-300S+ spin coater kit
@@ -55,7 +58,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     
     // used to exit the ramp sequence thread if the stop button was pressed
     private boolean stopMotor;
-    
+        
     /**
      * Creates new form SCKTalkPhiMain
      */
@@ -67,6 +70,9 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         
         // set the scaling factor
         rescaleFactorTextField.setText("" + SCKTalkPhi.SCALE_FACTOR);
+        
+        // read the save data from text field
+        readSavedStepSequence();
         
         // create a timer object for count seconds the motor is spining
         spinTimer = new Timer(1000, new ActionListener() {
@@ -83,6 +89,31 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 exitButtonActionPerformed(null);
             }
         });
+    }
+    
+    /**
+     * Method to read the saved step sequence data
+     */
+    private void readSavedStepSequence() {
+        String filePath = System.getProperty("user.dir") + File.separator + SCKTalkPhi.RAMP_SEQUENCE_FILE;
+        String stepSequence = SCKTalkPhi.readFileAsString(filePath);
+        
+        if(stepSequence !=null) {
+             rampProgramTextArea.setText(stepSequence);
+        }
+    }
+    
+    /**
+     * Method to save the step sequence
+     * @param filePath 
+     */
+    private void saveStepSequence(String filePath) {
+        if(filePath == null) {
+            filePath = System.getProperty("user.dir") + File.separator + SCKTalkPhi.RAMP_SEQUENCE_FILE;
+        }
+        
+        String content = rampProgramTextArea.getText();
+        SCKTalkPhi.writeStringToFile(content, filePath);
     }
     
     /**
@@ -143,6 +174,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         spinTimeLabel = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         rampStepTextField = new javax.swing.JTextField();
+        saveRampButton = new javax.swing.JButton();
+        loadRampButton = new javax.swing.JButton();
 
         jLabel14.setText("Max Speed");
 
@@ -352,6 +385,20 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             }
         });
 
+        saveRampButton.setText("SAVE");
+        saveRampButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveRampButtonActionPerformed(evt);
+            }
+        });
+
+        loadRampButton.setText("LOAD");
+        loadRampButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadRampButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -399,7 +446,11 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(rampStepTextField)
-                                    .addComponent(spinTimeTextField)))))
+                                    .addComponent(spinTimeTextField)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(saveRampButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(loadRampButton))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(startButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -423,36 +474,43 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 24, Short.MAX_VALUE)
+                        .addGap(0, 29, Short.MAX_VALUE)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(spinSpeedLabel))
-                        .addGap(4, 4, 4)
+                            .addComponent(spinSpeedLabel)))
+                    .addComponent(jScrollPane2))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel12)
-                            .addComponent(spinTimeLabel)))
-                    .addComponent(jScrollPane2))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(incrementComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel16)
-                    .addComponent(rampStepTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(spinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11)
-                    .addComponent(spinTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(exitButton)
-                    .addComponent(stopButton)
-                    .addComponent(downButton)
-                    .addComponent(upButton)
-                    .addComponent(startButton))
+                            .addComponent(spinTimeLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(incrementComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16)
+                            .addComponent(rampStepTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(spinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11)
+                            .addComponent(spinTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(exitButton)
+                            .addComponent(stopButton)
+                            .addComponent(downButton)
+                            .addComponent(upButton)
+                            .addComponent(startButton)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(saveRampButton)
+                            .addComponent(loadRampButton))))
                 .addContainerGap())
         );
 
@@ -610,6 +668,9 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        // save the step sequence
+        saveStepSequence(null);
         
         System.exit(0);
     }//GEN-LAST:event_exitButtonActionPerformed
@@ -848,6 +909,32 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_rescaleFactorTextFieldActionPerformed
+
+    private void saveRampButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveRampButtonActionPerformed
+        JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        int r = fileChooser.showSaveDialog(this);
+ 
+        // if the user selects a file
+        if (r == JFileChooser.APPROVE_OPTION) {
+            // get the path of the selected file
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            String content = rampProgramTextArea.getText();
+            SCKTalkPhi.writeStringToFile(content, filePath);
+        }
+    }//GEN-LAST:event_saveRampButtonActionPerformed
+
+    private void loadRampButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadRampButtonActionPerformed
+        JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        int r = fileChooser.showOpenDialog(this);
+ 
+        // if the user selects a file
+        if (r == JFileChooser.APPROVE_OPTION) {
+            // get the path of the selected file
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            String content = SCKTalkPhi.readFileAsString(filePath);
+            rampProgramTextArea.setText(content);
+        }
+    }//GEN-LAST:event_loadRampButtonActionPerformed
     
     /**
      * Given an RPM reading set the speed by converting to micro-steps per second
@@ -901,11 +988,13 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton loadRampButton;
     private javax.swing.JTextField maxSpinSpeedTextField;
     private javax.swing.JTextArea rampProgramTextArea;
     private javax.swing.JTextField rampStepTextField;
     private javax.swing.JTextField rescaleFactorTextField;
     private javax.swing.JCheckBox runRampSequenceCheckBox;
+    private javax.swing.JButton saveRampButton;
     private javax.swing.JLabel spinSpeedLabel;
     private javax.swing.JTextField spinSpeedTextField;
     private javax.swing.JLabel spinTimeLabel;

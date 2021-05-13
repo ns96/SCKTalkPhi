@@ -19,6 +19,11 @@ package com.instras;
 import java.awt.EventQueue;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -31,10 +36,54 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @version 2.0.0 11/17/2020
  */
 public class SCKTalkPhi {
-    public static final String VERSION = "SCKTalkPhi v2.0.0 (11/20/2020)";
+    public static final String VERSION = "SCKTalkPhi v1.0.0 (05/13/2020)";
 
     // the scaling factor which converts everything into rpm with the SCK-300S+
     public static final double SCALE_FACTOR = 0.039;
+    
+    public static final String RAMP_SEQUENCE_FILE = "ramp_sequence.txt";
+    
+    /**
+     * Method to read a text file into string
+     * @param filePath
+     * @return string containing the contents of the file
+     */
+    public static String readFileAsString(String filePath) {
+        String content = null;
+ 
+        try {
+            System.out.println("Reading file: " + filePath + " ...");
+            content = new String ( Files.readAllBytes( Paths.get(filePath) ) );
+        } 
+        catch (IOException e) {
+            System.out.println("Missing file: " + filePath);
+        }
+ 
+        return content;
+    }
+    
+    /**
+     * Method to write a string to a file
+     * @param content
+     * @param filePath
+     * @return 
+     */
+    public static boolean writeStringToFile(String content, String filePath) {
+        try {
+            System.out.println("Writing file: " + filePath + " ...");
+            File output = new File(filePath);
+            FileWriter writer = new FileWriter(output);
+
+            writer.write(content);
+            writer.flush();
+            writer.close();
+        } catch (IOException ex) {
+            return false;
+        }    
+        
+        return true;
+    }
+    
     /**
      * Main method where either the desktop or frame for the Raspberry PiTFT is
      * called.
