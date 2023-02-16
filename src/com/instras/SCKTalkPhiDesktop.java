@@ -376,6 +376,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
 
         jLabel16.setText("Ramp Step");
 
+        rampStepTextField.setEditable(false);
         rampStepTextField.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         rampStepTextField.setForeground(java.awt.Color.blue);
         rampStepTextField.setText("Program Not Running ..");
@@ -468,13 +469,13 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(runRampSequenceCheckBox)
+                    .addComponent(runRampSequenceCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(connectButton)
                     .addComponent(connectLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 29, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -536,7 +537,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             startButton.setEnabled(false);
             
             //Set up some initial acceleration and velocity values
-            Double accleration = new Double(accelarationTextField.getText());
+            Double accleration = Double.valueOf(accelarationTextField.getText());
             stepperPhidget.setAcceleration(accleration);
             
             // set the current limit
@@ -723,6 +724,10 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 }
             });
         } catch (PhidgetException ex) {
+            JOptionPane.showMessageDialog(this,
+            "Stepper Driver Not Found",
+            "Connection Error", JOptionPane.ERROR_MESSAGE);
+            
             connectLabel.setText("Connection Failed ...");
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -735,16 +740,12 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
      */
     private void spinSpeedTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spinSpeedTextFieldActionPerformed
         try {
-            int changeBy = 50; // how much to change the speed by
-                    
             int newSpeed = Integer.parseInt(spinSpeedTextField.getText());
-            
-            /* DEBUG Code
             setSpeed = newSpeed;
             setMotorSpeed();
-            Thread.sleep(50);
-            */
             
+            /*
+            int changeBy = 50; // how much to change the speed by
             if(newSpeed >= setSpeed) {
                 // we need to increate is steps of 100 rpms
                 int diff = newSpeed - setSpeed;
@@ -776,7 +777,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 setSpeed = newSpeed;
                 setMotorSpeed();
             }
-        } catch(NumberFormatException | InterruptedException ex) {
+            */
+        } catch(NumberFormatException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_spinSpeedTextFieldActionPerformed
@@ -812,6 +814,12 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
      */
     private void upButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
         int increment = Integer.parseInt(incrementComboBox.getSelectedItem().toString());
+        
+        // if the set speed is zero, let's from the TF
+        if(setSpeed == 0) {
+            setSpeed = Integer.parseInt(spinSpeedTextField.getText());
+        }
+        
         setSpeed += increment;
         
         // update the UI and set the motor speed
@@ -892,7 +900,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         if(stepperPhidget == null) return;
         
         try {
-            Double accleration = new Double(accelarationTextField.getText());
+            Double accleration = Double.valueOf(accelarationTextField.getText());
             stepperPhidget.setAcceleration(accleration);
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);

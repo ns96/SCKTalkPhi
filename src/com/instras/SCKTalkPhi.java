@@ -36,7 +36,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @version 2.0.0 11/17/2020
  */
 public class SCKTalkPhi {
-    public static final String VERSION = "SCKTalkPhi v1.0.0 (05/13/2020)";
+    public static final String VERSION = "SCKTalkPhi v2.0.0 (02/16/2023)";
 
     // the scaling factor which converts everything into rpm with the SCK-300S+
     public static final double SCALE_FACTOR = 0.039;
@@ -130,7 +130,8 @@ public class SCKTalkPhi {
                         gd.setFullScreenWindow(frame);
                         System.out.println("In full screen mode");
                     } else {
-                        // Can't run fullscreen, need to bodge around it (setSize to screen size, etc)
+                        // Can't run fullscreen, need to dodge around it (setSize to screen size, etc)
+                        frame.pack();
                     }
 
                     frame.validate();

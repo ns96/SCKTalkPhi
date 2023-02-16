@@ -65,7 +65,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private Stepper stepperPhidget;
 
     // this specifies how fast the motor should accelarate
-    private double acceleration = 1500; // rpms per sec
+    private double acceleration = 500; // rpms per sec
 
     // the current limit of 1.0
     private double currentLimit = 1.0;
@@ -93,14 +93,29 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     
     // used for storing program data
     private final Preferences prefs;
+    
+    // the current text field
+    private JTextField currentTextField;
 
     /**
      * Creates new form SCKTalkPhiRaspberryPi
      */
     public SCKTalkPhiRaspberryPi() {
         initComponents();
+        
+        // add the vertical text to the tab panel
+        // Create vertical labels to render tab titles
+        JLabel labTab1 = new JLabel(" MAIN ");
+        labTab1.setFont(new Font("Segoe UI Black", Font.BOLD, 36));
+        labTab1.setUI(new VerticalLabelUI(false)); // true/false to make it upwards/downwards
+        mainTabbedPane.setTabComponentAt(0, labTab1); // For component1
 
-        // create a timer object for count seconds the motor is spining
+        JLabel labTab2 = new JLabel(" SETUP/EXIT ");
+        labTab2.setFont(new Font("Segoe UI Black", Font.BOLD, 36));
+        labTab2.setUI(new VerticalLabelUI(false));
+        mainTabbedPane.setTabComponentAt(1, labTab2); // For component2
+        
+        // create a timer object for count seconds the motor is spinning
         spinTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -111,7 +126,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         // initialize the preferences object
         prefs = Preferences.userRoot().node(this.getClass().getName());
         
-        // now load there preferences
+        // now load the preferences
         loadPreferences();
     }
 
@@ -154,7 +169,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         incrementComboBox = createSimpleCombobox();
         jLabel2 = new JLabel();
         spinSpeedTextField = new JTextField();
-        runRampCheckBox = new JCheckBox();
+        rampToggleButton = createSimpleToggleButton();
         rampStepTextField = new JTextField();
         jPanel4 = new JPanel();
         jPanel3 = new JPanel();
@@ -164,6 +179,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         maxSpeedTextField = new JTextField();
         jLabel11 = new JLabel();
         currentLimitTextField = new JTextField();
+        jLabel9 = new JLabel();
+        accTextField = new JTextField();
         jPanel5 = new JPanel();
         jLabel4 = new JLabel();
         jLabel5 = new JLabel();
@@ -174,11 +191,23 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jLabel8 = new JLabel();
         ramp2SpeedTextField = new JTextField();
         ramp2TimeTextField = new JTextField();
+        keyPadPanel = new JPanel();
+        keyPadButton1 = createSimpleButton();
+        keyPadButton2 = createSimpleButton();
+        keyPadButton3 = createSimpleButton();
+        keyPadButton4 = createSimpleButton();
+        keyPadButton5 = createSimpleButton();
+        keyPadButton6 = createSimpleButton();
+        keyPadButton7 = createSimpleButton();
+        keyPadButton8 = createSimpleButton();
+        keyPadButton9 = createSimpleButton();
+        keyPadButton0 = createSimpleButton();
+        keyPadBackButton = createSimpleButton();
+        keyPadClearButton = createSimpleButton();
 
         setLayout(new BorderLayout());
 
-        jPanel1.setLayout(new GridLayout(1, 0));
-
+        startButton.setFont(new Font("Segoe UI Black", 1, 48)); // NOI18N
         startButton.setText("START");
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -187,7 +216,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel1.add(startButton);
 
-        upButton.setText("UP");
+        upButton.setFont(new Font("Segoe UI Black", 1, 48)); // NOI18N
+        upButton.setText("   UP   ");
         upButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 upButtonActionPerformed(evt);
@@ -195,6 +225,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel1.add(upButton);
 
+        downButton.setFont(new Font("Segoe UI Black", 1, 48)); // NOI18N
         downButton.setText("DOWN");
         downButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -203,6 +234,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel1.add(downButton);
 
+        stopButton.setFont(new Font("Segoe UI Black", 1, 48)); // NOI18N
         stopButton.setText("STOP");
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -213,6 +245,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
         add(jPanel1, BorderLayout.SOUTH);
 
+        mainTabbedPane.setTabPlacement(JTabbedPane.LEFT);
+        mainTabbedPane.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         mainTabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
                 mainTabbedPaneStateChanged(evt);
@@ -221,6 +255,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
         jPanel2.setLayout(new GridLayout(5, 2, 2, 2));
 
+        connectToggleButton.setFont(new Font("Segoe UI Black", 1, 48)); // NOI18N
         connectToggleButton.setText("CONNECT");
         connectToggleButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -229,63 +264,66 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel2.add(connectToggleButton);
 
-        connectLabel.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        connectLabel.setFont(new Font("Segoe UI Black", 1, 24)); // NOI18N
         connectLabel.setForeground(new Color(255, 0, 0));
         connectLabel.setText("Not Connected");
         connectLabel.setToolTipText("");
         jPanel2.add(connectLabel);
 
-        spinSpeedLabel.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        spinSpeedLabel.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         spinSpeedLabel.setForeground(Color.blue);
         spinSpeedLabel.setText("0 rpms");
         jPanel2.add(spinSpeedLabel);
 
-        spinTimeLabel.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        spinTimeLabel.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         spinTimeLabel.setForeground(Color.blue);
         spinTimeLabel.setText("0 sec");
         jPanel2.add(spinTimeLabel);
 
-        jLabel1.setFont(new Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setText("Increment");
+        jLabel1.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        jLabel1.setText("INCREMENT");
         jPanel2.add(jLabel1);
 
-        incrementComboBox.setFont(new Font("Tahoma", 1, 14)); // NOI18N
-        incrementComboBox.setModel(new DefaultComboBoxModel(new String[] { "1", "10", "20", "50", "100", "500" }));
+        incrementComboBox.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        incrementComboBox.setModel(new DefaultComboBoxModel(new String[] { "10", "50", "100", "500" }));
+        incrementComboBox.setSelectedItem(new String("100"));
         jPanel2.add(incrementComboBox);
 
-        jLabel2.setFont(new Font("Tahoma", 1, 14)); // NOI18N
-        jLabel2.setText("Speed");
+        jLabel2.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        jLabel2.setText("SPEED");
         jPanel2.add(jLabel2);
 
-        spinSpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        spinSpeedTextField.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         spinSpeedTextField.setText("3000");
-        jPanel2.add(spinSpeedTextField);
-
-        runRampCheckBox.setFont(new Font("Tahoma", 1, 14)); // NOI18N
-        runRampCheckBox.setText("Ramp");
-        runRampCheckBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                runRampCheckBoxActionPerformed(evt);
+        spinSpeedTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                spinSpeedTextFieldFocusGained(evt);
             }
         });
-        jPanel2.add(runRampCheckBox);
+        jPanel2.add(spinSpeedTextField);
+
+        rampToggleButton.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        rampToggleButton.setText("RAMP");
+        jPanel2.add(rampToggleButton);
 
         rampStepTextField.setEditable(false);
+        rampStepTextField.setFont(new Font("Segoe UI", 1, 24)); // NOI18N
+        rampStepTextField.setForeground(Color.blue);
         rampStepTextField.setText("Program Not Running ...");
         jPanel2.add(rampStepTextField);
 
-        mainTabbedPane.addTab("MAIN", jPanel2);
+        mainTabbedPane.addTab("", jPanel2);
 
         jPanel4.setLayout(new BorderLayout());
 
-        jPanel3.setLayout(new GridLayout(3, 2, 2, 2));
+        jPanel3.setLayout(new GridLayout(4, 2, 2, 6));
 
-        jLabel3.setFont(new Font("Tahoma", 1, 14)); // NOI18N
-        jLabel3.setText("Rotation");
+        jLabel3.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        jLabel3.setText("ROTATION");
         jLabel3.setToolTipText("");
         jPanel3.add(jLabel3);
 
-        directionComboBox.setFont(new Font("Tahoma", 1, 14)); // NOI18N
+        directionComboBox.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         directionComboBox.setModel(new DefaultComboBoxModel(new String[] { "Clockwise", "Counter Clockwise" }));
         directionComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -294,12 +332,12 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel3.add(directionComboBox);
 
-        jLabel10.setFont(new Font("Tahoma", 1, 14)); // NOI18N
-        jLabel10.setText("Max Speed");
+        jLabel10.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        jLabel10.setText("MAX SPEED");
         jPanel3.add(jLabel10);
 
         maxSpeedTextField.setEditable(false);
-        maxSpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        maxSpeedTextField.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
         maxSpeedTextField.setText("8000");
         maxSpeedTextField.setToolTipText("");
         maxSpeedTextField.addFocusListener(new FocusAdapter() {
@@ -307,18 +345,14 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 rampTextFieldFocusGained(evt);
             }
         });
-        maxSpeedTextField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                maxSpeedTextFieldActionPerformed(evt);
-            }
-        });
         jPanel3.add(maxSpeedTextField);
 
-        jLabel11.setFont(new Font("Tahoma", 1, 14)); // NOI18N
-        jLabel11.setText("Current Limit");
+        jLabel11.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        jLabel11.setText("CURRENT LIMIT");
         jPanel3.add(jLabel11);
 
-        currentLimitTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        currentLimitTextField.setEditable(false);
+        currentLimitTextField.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
         currentLimitTextField.setText("1.0");
         currentLimitTextField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
@@ -327,26 +361,40 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel3.add(currentLimitTextField);
 
+        jLabel9.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        jLabel9.setText("ACC. (RPM/s)");
+        jPanel3.add(jLabel9);
+
+        accTextField.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
+        accTextField.setText("2000");
+        accTextField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent evt) {
+                accTextFieldFocusGained(evt);
+            }
+        });
+        jPanel3.add(accTextField);
+
         jPanel4.add(jPanel3, BorderLayout.NORTH);
 
         jPanel5.setLayout(new GridLayout(3, 3, 2, 2));
 
-        jLabel4.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        jLabel4.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         jLabel4.setText("STEP");
         jPanel5.add(jLabel4);
 
-        jLabel5.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        jLabel5.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         jLabel5.setText("RPM");
         jPanel5.add(jLabel5);
 
-        jLabel6.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        jLabel6.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         jLabel6.setText("DWELL");
         jPanel5.add(jLabel6);
 
+        jLabel7.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         jLabel7.setText("# 1");
         jPanel5.add(jLabel7);
 
-        ramp1SpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp1SpeedTextField.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
         ramp1SpeedTextField.setText("500");
         ramp1SpeedTextField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
@@ -355,7 +403,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel5.add(ramp1SpeedTextField);
 
-        ramp1TimeTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp1TimeTextField.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
         ramp1TimeTextField.setText("10");
         ramp1TimeTextField.setToolTipText("");
         ramp1TimeTextField.addFocusListener(new FocusAdapter() {
@@ -365,10 +413,11 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel5.add(ramp1TimeTextField);
 
+        jLabel8.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
         jLabel8.setText("# 2");
         jPanel5.add(jLabel8);
 
-        ramp2SpeedTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp2SpeedTextField.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
         ramp2SpeedTextField.setText("3000");
         ramp2SpeedTextField.setToolTipText("");
         ramp2SpeedTextField.addFocusListener(new FocusAdapter() {
@@ -378,7 +427,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel5.add(ramp2SpeedTextField);
 
-        ramp2TimeTextField.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        ramp2TimeTextField.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
         ramp2TimeTextField.setText("30");
         ramp2TimeTextField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent evt) {
@@ -389,9 +438,122 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
         jPanel4.add(jPanel5, BorderLayout.CENTER);
 
-        mainTabbedPane.addTab("SETUP", jPanel4);
+        mainTabbedPane.addTab("", jPanel4);
 
         add(mainTabbedPane, BorderLayout.CENTER);
+
+        keyPadPanel.setLayout(new GridLayout(4, 3));
+
+        keyPadButton1.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton1.setText("   1   ");
+        keyPadButton1.setActionCommand("1");
+        keyPadButton1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton1ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton1);
+
+        keyPadButton2.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton2.setText("2");
+        keyPadButton2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton2ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton2);
+
+        keyPadButton3.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton3.setText("3");
+        keyPadButton3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton3ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton3);
+
+        keyPadButton4.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton4.setText("4");
+        keyPadButton4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton4ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton4);
+
+        keyPadButton5.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton5.setText("5");
+        keyPadButton5.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton5ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton5);
+
+        keyPadButton6.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton6.setText("6");
+        keyPadButton6.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton6ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton6);
+
+        keyPadButton7.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton7.setText("7");
+        keyPadButton7.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton7ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton7);
+
+        keyPadButton8.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton8.setText("8");
+        keyPadButton8.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton8ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton8);
+
+        keyPadButton9.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton9.setText("9");
+        keyPadButton9.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton9ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton9);
+
+        keyPadButton0.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadButton0.setText("0");
+        keyPadButton0.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadButton0ActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadButton0);
+
+        keyPadBackButton.setFont(new Font("Segoe UI Black", 0, 36)); // NOI18N
+        keyPadBackButton.setText("<<");
+        keyPadBackButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadBackButtonActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadBackButton);
+
+        keyPadClearButton.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
+        keyPadClearButton.setText("CLEAR");
+        keyPadClearButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                keyPadClearButtonActionPerformed(evt);
+            }
+        });
+        keyPadPanel.add(keyPadClearButton);
+
+        add(keyPadPanel, BorderLayout.EAST);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -450,6 +612,14 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         stopMotor = true;
 
         try {
+            if(mainTabbedPane.getSelectedIndex() == 1) {
+                if(stepperPhidget != null && stepperPhidget.getAttached()) {
+                    stepperPhidget.close();
+                }
+                System.exit(0);
+            }
+            
+            // de-energize the stepper motor
             if (stepperPhidget != null) {
                 stepperPhidget.setEngaged(false);
             }
@@ -461,13 +631,6 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             spinSpeedLabel.setText("stopped");
             spinTimeLabel.setText("0");
             startButton.setEnabled(true);
-            
-            if(mainTabbedPane.getSelectedIndex() == 1) {
-                if(stepperPhidget != null) {
-                    stepperPhidget.close();
-                }
-                System.exit(0);
-            }
         } catch (PhidgetException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -495,6 +658,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
      */
     private void rampTextFieldFocusGained(FocusEvent evt) {//GEN-FIRST:event_rampTextFieldFocusGained
         currentRampTextField = (JTextField) evt.getComponent();
+        currentTextField = currentRampTextField;
     }//GEN-LAST:event_rampTextFieldFocusGained
 
     /**
@@ -535,11 +699,15 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             return;
         }
 
-        // The baord is connected so move motor
+        // The board is connected so move motor
         try {
             startButton.setEnabled(false);
-
+            
+            // check the speed and reset if needed
+            checkSpeed();
+           
             //Set up some initial acceleration and velocity values
+            acceleration = Double.parseDouble(accTextField.getText());
             stepperPhidget.setAcceleration(acceleration);
 
             // set the current limit
@@ -550,7 +718,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             System.out.println("\nEngaging Stepper Motor\n");
             stepperPhidget.setEngaged(true);
 
-            if (runRampCheckBox.isSelected()) {
+            if (rampToggleButton.isSelected()) {
                 // start a step seqence
                 startStepSequence();
             } else {
@@ -695,19 +863,79 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_mainTabbedPaneStateChanged
     
-    /**
-     * Need to disable the UP/DOWN buttons
-     * 
-     * @param evt 
-     */
-    private void runRampCheckBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_runRampCheckBoxActionPerformed
-        System.out.println("Disable start and stop button");
-    }//GEN-LAST:event_runRampCheckBoxActionPerformed
+    private void keyPadButton2ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton2ActionPerformed
+        updateCurrentTextField("2");
+    }//GEN-LAST:event_keyPadButton2ActionPerformed
 
-    private void maxSpeedTextFieldActionPerformed(ActionEvent evt) {//GEN-FIRST:event_maxSpeedTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_maxSpeedTextFieldActionPerformed
+    private void spinSpeedTextFieldFocusGained(FocusEvent evt) {//GEN-FIRST:event_spinSpeedTextFieldFocusGained
+        currentTextField = spinSpeedTextField;
+    }//GEN-LAST:event_spinSpeedTextFieldFocusGained
 
+    private void keyPadButton1ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton1ActionPerformed
+        updateCurrentTextField("1");
+    }//GEN-LAST:event_keyPadButton1ActionPerformed
+
+    private void keyPadClearButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadClearButtonActionPerformed
+        if(currentTextField != null) {
+            currentTextField.setText("");
+        }
+    }//GEN-LAST:event_keyPadClearButtonActionPerformed
+
+    private void keyPadButton3ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton3ActionPerformed
+        updateCurrentTextField("3");
+    }//GEN-LAST:event_keyPadButton3ActionPerformed
+
+    private void keyPadButton4ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton4ActionPerformed
+        updateCurrentTextField("4");
+    }//GEN-LAST:event_keyPadButton4ActionPerformed
+
+    private void keyPadButton5ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton5ActionPerformed
+        updateCurrentTextField("5");
+    }//GEN-LAST:event_keyPadButton5ActionPerformed
+
+    private void keyPadButton6ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton6ActionPerformed
+        updateCurrentTextField("6");
+    }//GEN-LAST:event_keyPadButton6ActionPerformed
+
+    private void keyPadButton7ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton7ActionPerformed
+        updateCurrentTextField("7");
+    }//GEN-LAST:event_keyPadButton7ActionPerformed
+
+    private void keyPadButton8ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton8ActionPerformed
+        updateCurrentTextField("8");
+    }//GEN-LAST:event_keyPadButton8ActionPerformed
+
+    private void keyPadButton9ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton9ActionPerformed
+        updateCurrentTextField("9");
+    }//GEN-LAST:event_keyPadButton9ActionPerformed
+
+    private void keyPadButton0ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadButton0ActionPerformed
+        updateCurrentTextField("0");
+    }//GEN-LAST:event_keyPadButton0ActionPerformed
+
+    private void keyPadBackButtonActionPerformed(ActionEvent evt) {//GEN-FIRST:event_keyPadBackButtonActionPerformed
+        if(currentTextField != null) {
+            String currentText = currentTextField.getText();
+            int length = currentText.length();
+            if(length >= 1) {
+                currentTextField.setText(currentText.substring(0, length - 1));
+            }
+        }
+    }//GEN-LAST:event_keyPadBackButtonActionPerformed
+
+    private void accTextFieldFocusGained(FocusEvent evt) {//GEN-FIRST:event_accTextFieldFocusGained
+        currentTextField = accTextField;
+    }//GEN-LAST:event_accTextFieldFocusGained
+    
+    // method to update the text in the selected text field
+    private void updateCurrentTextField(String number) {
+        if(currentTextField != null) {
+            String currentText = currentTextField.getText();
+            currentTextField.setText(currentText + number);
+        }
+    }
+    
+    
     /**
      * Method to run the step sequence the step sequence
      */
@@ -792,7 +1020,6 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
         // update the GUI now
         spinSpeedTextField.setText("" + value);
-
         changeMotorSpeedSmoothly();
     }
 
@@ -860,10 +1087,12 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
      */
     private void changeMotorSpeedSmoothly() {
         try {
-            int changeBy = 50; // how much to change the speed by
-
             int newSpeed = Integer.parseInt(spinSpeedTextField.getText());
-
+            setSpeed = newSpeed;
+            setMotorSpeed();
+            
+            /* 2/16/2023 Let the stepper motor driver handel the smooth acceleration?    
+            int changeBy = 50; // how much to change the speed by
             if (newSpeed >= setSpeed) {
                 // we need to increate is steps of 100 rpms
                 int diff = newSpeed - setSpeed;
@@ -880,7 +1109,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                     setMotorSpeed();
                 }
             } else {
-                // we need to decrese in steps of 100 rpms
+                // we need to decrease in steps of 100 rpms
                 int diff = setSpeed - newSpeed;
                 while (setSpeed > newSpeed && diff > changeBy) {
                     setSpeed -= changeBy;
@@ -892,11 +1121,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
                 setSpeed = newSpeed;
                 setMotorSpeed();
-            }
-        } catch (NumberFormatException nfe) {
-        } catch (InterruptedException ex) {
-            Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            }*/
+        } catch (NumberFormatException nfe) { }
     }
 
     /**
@@ -932,12 +1158,24 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     }
     
     /**
+     * Check the speed value to make sure we not going faster than we should
+     */
+    private void checkSpeed() {
+        int maxSpeed =  getMaxSpeed();
+        int currentSpeed = Integer.parseInt(spinSpeedTextField.getText());
+        if(currentSpeed > maxSpeed) {
+            spinSpeedTextField.setText("" + maxSpeed);
+        }
+    }
+    
+    /**
      * Method to store the program preferences
      */
     private void setPreferences() {
         prefs.putInt("direction", directionComboBox.getSelectedIndex());
         prefs.put("maxSpeed", maxSpeedTextField.getText());
         prefs.put("currentLimit", currentLimitTextField.getText());
+        prefs.put("acceleration", accTextField.getText());
         prefs.put("ramp1Speed", ramp1SpeedTextField.getText());
         prefs.put("ramp1Time", ramp1TimeTextField.getText());
         prefs.put("ramp2Speed", ramp2SpeedTextField.getText());
@@ -949,8 +1187,9 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
      */
     private void loadPreferences() {
         directionComboBox.setSelectedIndex(prefs.getInt("direction", 0));
-        maxSpeedTextField.setText(prefs.get("maxSpeed", "5000"));
+        //maxSpeedTextField.setText(prefs.get("maxSpeed", "8000"));
         currentLimitTextField.setText(prefs.get("currentLimit", "1.0"));
+        accTextField.setText(prefs.get("acceleration", "500"));
         ramp1SpeedTextField.setText(prefs.get("ramp1Speed", "500"));
         ramp1TimeTextField.setText(prefs.get("ramp1Time", "30"));
         ramp2SpeedTextField.setText(prefs.get("ramp2Speed", "3000"));
@@ -958,6 +1197,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private JTextField accTextField;
     private JLabel connectLabel;
     private JToggleButton connectToggleButton;
     private JTextField currentLimitTextField;
@@ -974,11 +1214,25 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private JLabel jLabel6;
     private JLabel jLabel7;
     private JLabel jLabel8;
+    private JLabel jLabel9;
     private JPanel jPanel1;
     private JPanel jPanel2;
     private JPanel jPanel3;
     private JPanel jPanel4;
     private JPanel jPanel5;
+    private JButton keyPadBackButton;
+    private JButton keyPadButton0;
+    private JButton keyPadButton1;
+    private JButton keyPadButton2;
+    private JButton keyPadButton3;
+    private JButton keyPadButton4;
+    private JButton keyPadButton5;
+    private JButton keyPadButton6;
+    private JButton keyPadButton7;
+    private JButton keyPadButton8;
+    private JButton keyPadButton9;
+    private JButton keyPadClearButton;
+    private JPanel keyPadPanel;
     private JTabbedPane mainTabbedPane;
     private JTextField maxSpeedTextField;
     private JTextField ramp1SpeedTextField;
@@ -986,7 +1240,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private JTextField ramp2SpeedTextField;
     private JTextField ramp2TimeTextField;
     private JTextField rampStepTextField;
-    private JCheckBox runRampCheckBox;
+    private JToggleButton rampToggleButton;
     private JLabel spinSpeedLabel;
     private JTextField spinSpeedTextField;
     private JLabel spinTimeLabel;
@@ -1006,8 +1260,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 SCKTalkPhiRaspberryPi sckTalkPhiRaspberryPi = new SCKTalkPhiRaspberryPi();
 
                 JFrame frame = new JFrame();
-                frame.setSize(320, 240);
-                frame.setResizable(false);
+                //frame.setSize(320, 240);
+                //frame.setResizable(false);
                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
                 frame.setTitle("Raspberry Pi GUI");
                 
@@ -1015,6 +1269,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 frame.add(sckTalkPhiRaspberryPi);
 
                 frame.validate();
+                frame.pack();
                 frame.setVisible(true);
             }
         });
