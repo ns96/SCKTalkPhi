@@ -30,9 +30,9 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -303,7 +303,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         jPanel2.add(spinSpeedTextField);
 
         rampToggleButton.setFont(new Font("Segoe UI Black", 1, 36)); // NOI18N
-        rampToggleButton.setText("RAMP");
+        rampToggleButton.setText("RUN RAMP");
         jPanel2.add(rampToggleButton);
 
         rampStepTextField.setEditable(false);
@@ -314,7 +314,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
 
         mainTabbedPane.addTab("", jPanel2);
 
-        jPanel4.setLayout(new BorderLayout());
+        jPanel4.setLayout(new BoxLayout(jPanel4, BoxLayout.Y_AXIS));
 
         jPanel3.setLayout(new GridLayout(4, 2, 2, 6));
 
@@ -374,7 +374,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel3.add(accTextField);
 
-        jPanel4.add(jPanel3, BorderLayout.NORTH);
+        jPanel4.add(jPanel3);
 
         jPanel5.setLayout(new GridLayout(3, 3, 2, 2));
 
@@ -436,7 +436,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         });
         jPanel5.add(ramp2TimeTextField);
 
-        jPanel4.add(jPanel5, BorderLayout.CENTER);
+        jPanel4.add(jPanel5);
 
         mainTabbedPane.addTab("", jPanel4);
 
@@ -949,6 +949,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 String[] stepSeqences = getRampProgramSteps();
 
                 // interate over the lines containing the seqences
+                outerLoop:
                 for (int i = 0; i < stepSeqences.length; i++) {
                     String[] stepInfo = stepSeqences[i].split("\\s*,\\s*");
                     String setSpeedString = stepInfo[1];
@@ -965,8 +966,8 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                     while (count < targetSpinTime) {
                         // check to if the motor was stop
                         if (stopMotor) {
-                            rampStepTextField.setText("Sequenced Stoped ...");
-                            return false;
+                            rampStepTextField.setText("Sequenced Stopped ...");
+                            break outerLoop;
                         }
 
                         // update the count timer
@@ -982,9 +983,12 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                     }
                 }
 
-                // stop the motor now
+                // stop the motor now and set target spin time to zero
+                targetSpinTime = 0;
                 stopButtonActionPerformed(null);
-
+                targetSpinTime = 0;
+                rampStepTextField.setText("Program Finished ...");
+                
                 // seqeunce complete so return true
                 return true;
             }
