@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 nathan
+ * Copyright (C) 2015 Nathan Stevens
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ import javax.swing.event.ChangeListener;
 
 /**
  *
- * @author nathan
+ * @author Nathan Stevens 
  */
 public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {        
     // need to make this global since on the rPi touch screen 
@@ -114,6 +114,9 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         labTab2.setFont(new Font("Segoe UI Black", Font.BOLD, 36));
         labTab2.setUI(new VerticalLabelUI(false));
         mainTabbedPane.setTabComponentAt(1, labTab2); // For component2
+        
+        // set the current textfield to the speed textfield
+        currentTextField = spinSpeedTextField;
         
         // create a timer object for count seconds the motor is spinning
         spinTimer = new Timer(1000, new ActionListener() {
@@ -984,7 +987,6 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 }
 
                 // stop the motor now and set target spin time to zero
-                targetSpinTime = 0;
                 stopButtonActionPerformed(null);
                 targetSpinTime = 0;
                 rampStepTextField.setText("Program Finished ...");
