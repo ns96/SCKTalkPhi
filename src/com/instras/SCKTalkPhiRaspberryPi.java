@@ -860,9 +860,11 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
         if(mainTabbedPane.getSelectedIndex() == 0) {
             startButton.setText("START");
             stopButton.setText("STOP");
+            currentTextField = spinSpeedTextField;
         } else {
             startButton.setText("SAVE");
             stopButton.setText("EXIT");
+            currentTextField = null;
         }
     }//GEN-LAST:event_mainTabbedPaneStateChanged
     

@@ -36,10 +36,12 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @version 2.0.0 11/17/2020
  */
 public class SCKTalkPhi {
-    public static final String VERSION = "SCKTalkPhi v2.0.0 (02/16/2023)";
+    public static final String VERSION = "SCKTalkPhi v2.0.1 (02/26/2023)";
 
     // the scaling factor which converts everything into rpm with the SCK-300S+
-    public static final double SCALE_FACTOR = 0.039;
+    // 3.75 deg per step = 0.03906
+    // 7.5 deg per step = 0.07812
+    public static double SCALE_FACTOR = 0.03906;
     
     public static final String RAMP_SEQUENCE_FILE = "ramp_sequence.txt";
     
@@ -99,6 +101,7 @@ public class SCKTalkPhi {
         }
         
         EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 // launch the desktop UI
                 if (args.length == 0) {
@@ -110,7 +113,18 @@ public class SCKTalkPhi {
                     // to run this program as root by first running startx as root
                     // "sudo FRAMEBUFFER=/dev/fb1 startx"
                     // sudo ./run.sh
-
+                    
+                    // check to see if use a different rescale factor
+                    if(args.length >= 2) {
+                        try {
+                            double rf = Double.parseDouble(args[1]);
+                            SCKTalkPhi.SCALE_FACTOR = rf;
+                            System.out.println("Setting Rescale Factor To: " + rf);
+                        } catch(NumberFormatException nfe) {
+                            System.out.println("Error Setting Rescale Factor To: " + args[1]);
+                        }
+                    }
+                    
                     SCKTalkPhiRaspberryPi sckTalkPhiRaspberryPi = new SCKTalkPhiRaspberryPi();
 
                     JFrame frame = new JFrame();
