@@ -764,8 +764,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
             
                 // set the scaling factor and control mode to RUN 
                 // so we are in continous rotation mode
-                double rescaleFactor = SCKTalkPhi.SCALE_FACTOR;
-                stepperPhidget.setRescaleFactor(rescaleFactor);
+                stepperPhidget.setRescaleFactor(SCKTalkPhi.SCALE_FACTOR);
                 stepperPhidget.setControlMode(StepperControlMode.RUN);
 
                 System.out.println("Phidget Information");
