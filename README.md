@@ -8,7 +8,7 @@ It's a Netbeans based project with two main classes containing the motor control
 ### Installation
 1. Install the JRE for your particular operating system
 2. Install the Phigets drivers for your particular operating system (http://www.phidgets.com/docs/Operating_System_Support) 
-3. Download the zip archieve to a convient location and unpack
+3. Download the [latest zip release](https://github.com/ns96/SCKTalkPhi/releases) to a convient location and unpack
 
 ### Running On Desktop
 1. From the cmd line change into the SCKTalkPhi directory
