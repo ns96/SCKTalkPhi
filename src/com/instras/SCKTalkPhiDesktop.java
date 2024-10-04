@@ -740,12 +740,29 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
      */
     private void spinSpeedTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spinSpeedTextFieldActionPerformed
         try {
+            int changeBy = 100; // how much to change the speed when reducing speed
+             
             int newSpeed = Integer.parseInt(spinSpeedTextField.getText());
-            setSpeed = newSpeed;
-            setMotorSpeed();
             
-            /*
-            int changeBy = 50; // how much to change the speed by
+            if(newSpeed >= setSpeed) {
+                setSpeed = newSpeed;
+                setMotorSpeed();
+            } else {
+                // we need to decrease in steps of 50 rpms
+                int diff = setSpeed - newSpeed;
+                while (setSpeed > newSpeed && diff > changeBy) {
+                    setSpeed -= changeBy;
+                    setMotorSpeed();
+                    
+                    // pause a bit before decrease the speed again
+                    Thread.sleep(25);
+                }
+                
+                setSpeed = newSpeed;
+                setMotorSpeed();
+            }
+            
+            /**
             if(newSpeed >= setSpeed) {
                 // we need to increate is steps of 100 rpms
                 int diff = newSpeed - setSpeed;
@@ -779,6 +796,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             }
             */
         } catch(NumberFormatException ex) {
+            Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_spinSpeedTextFieldActionPerformed
