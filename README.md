@@ -23,5 +23,5 @@ Running the program in this setup is similar to running on the desktop, except t
 
 Below are the different GUIs for the Desktop, and Raspberry Pi with a LCD touch screen.
 
-![Program GUI](http://2.bp.blogspot.com/-c19xd2HZ4sU/VNlJxDzBSWI/AAAAAAAAASU/MZaRfr6UHkA/s1600/SCKTalkPhiGUI.png)
+![Program GUI](SCKTalkPhi.png)
 
