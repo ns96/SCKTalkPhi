@@ -545,15 +545,15 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                        
             // set the spin time
             spinTimeTextFieldActionPerformed(null);
-            
-            // power-up the motor now
-            System.out.println("\nEngaging Stepper Motor\n");
-            stepperPhidget.setEngaged(true);
-            
+                        
             if(runRampSequenceCheckBox.isSelected()) {
                 // start a step seqence
                 startStepSequence();
             } else {
+                // power-up the motor now
+                System.out.println("\nEngaging Stepper Motor\n");
+                stepperPhidget.setEngaged(true);
+                
                 // start the timer
                 spinTimer.start();
             
@@ -568,13 +568,17 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     /**
      * Method to run the step sequence the step sequence
      */
-    private void startStepSequence() {
+    private void startStepSequence() throws PhidgetException {
         // check that the sequence is good
         final String[] stepSeqences = checkStepSequences();
         if(stepSeqences == null) { 
             stopButtonActionPerformed(null);
             return; 
         }
+        
+        // power-up the motor now
+        System.out.println("\nEngaging Stepper Motor\n");
+        stepperPhidget.setEngaged(true);
         
         // create a swing work to run the sequence in the background
         SwingWorker worker = new SwingWorker<Boolean, Void>() {
@@ -914,7 +918,11 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
      * @param evt 
      */
     private void rampStepTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rampStepTextFieldActionPerformed
-        startStepSequence();
+        try {
+            startStepSequence();
+        } catch (PhidgetException ex) {
+            Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_rampStepTextFieldActionPerformed
 
     private void accelarationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accelarationTextFieldActionPerformed
