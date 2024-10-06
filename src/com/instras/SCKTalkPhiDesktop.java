@@ -571,7 +571,10 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private void startStepSequence() {
         // check that the sequence is good
         final String[] stepSeqences = checkStepSequences();
-        if(stepSeqences == null) { return; }
+        if(stepSeqences == null) { 
+            stopButtonActionPerformed(null);
+            return; 
+        }
         
         // create a swing work to run the sequence in the background
         SwingWorker worker = new SwingWorker<Boolean, Void>() {
@@ -582,8 +585,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 // interate over the lines containing the seqences
                 for(int i = 1; i < stepSeqences.length; i++) {
                     String[] stepInfo = stepSeqences[i].split("\\s*,\\s*");
-                    String setSpeedString = stepInfo[1];
-                    targetSpinTime = Integer.parseInt(stepInfo[2]);
+                    String setSpeedString = stepInfo[1].trim();
+                    targetSpinTime = Integer.parseInt(stepInfo[2].trim());
                     
                     rampStepTextField.setText(stepInfo[0] + ", " + setSpeedString + " rpms, " + targetSpinTime + " sec");
                     
@@ -635,11 +638,11 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         // interate over the lines containing the seqences
         for (int i = 1; i < stepSeqences.length; i++) {
             String[] stepInfo = stepSeqences[i].split("\\s*,\\s*");
-            String step = stepInfo[0];
+            String step = stepInfo[0].trim();
             
             try {
-                int speed = Integer.parseInt(stepInfo[1]);
-                int time = Integer.parseInt(stepInfo[2]);
+                int speed = Integer.parseInt(stepInfo[1].trim());
+                int time = Integer.parseInt(stepInfo[2].trim());
 
                 System.out.println("Checked: " + step + ", " + speed + " rpms, " + time + " sec");
             } catch(NumberFormatException nfe) {
@@ -748,7 +751,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 setSpeed = newSpeed;
                 setMotorSpeed();
             } else {
-                // we need to decrease in steps of 50 rpms
+                // we need to decrease in steps of 100 rpms to prevent motor 
+                // from lossing steps and stopping
                 int diff = setSpeed - newSpeed;
                 while (setSpeed > newSpeed && diff > changeBy) {
                     setSpeed -= changeBy;
@@ -764,7 +768,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             
             /**
             if(newSpeed >= setSpeed) {
-                // we need to increate is steps of 100 rpms
+                // we need to increase in steps of 100 rpms
                 int diff = newSpeed - setSpeed;
                 while (setSpeed < newSpeed && setSpeed != 0 && diff > changeBy*10) {
                     setSpeed += changeBy*2;
@@ -795,9 +799,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 setMotorSpeed();
             }
             */
-        } catch(NumberFormatException ex) {
-            Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
+        } catch(NumberFormatException | InterruptedException ex) {
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_spinSpeedTextFieldActionPerformed
