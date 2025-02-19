@@ -99,7 +99,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         String stepSequence = SCKTalkPhi.readFileAsString(filePath);
         
         if(stepSequence !=null) {
-             rampProgramTextArea.setText(stepSequence);
+            rampProgramTextArea.setText(stepSequence);
         }
     }
     
@@ -176,6 +176,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         rampStepTextField = new javax.swing.JTextField();
         saveRampButton = new javax.swing.JButton();
         loadRampButton = new javax.swing.JButton();
+        remoteCheckBox = new javax.swing.JCheckBox();
 
         jLabel14.setText("Max Speed");
 
@@ -245,7 +246,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         incrementComboBox.setSelectedIndex(1);
         incrementComboBox.setToolTipText("");
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Advance Settings"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel4.setText("Accelaration (rpms/s)");
 
@@ -309,7 +310,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                     .addComponent(accelarationTextField)
                     .addComponent(currentLimitTextField)
                     .addComponent(rescaleFactorTextField)
-                    .addComponent(directionComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(directionComboBox, 0, 196, Short.MAX_VALUE)
                     .addComponent(maxSpinSpeedTextField)))
         );
         jPanel1Layout.setVerticalGroup(
@@ -400,6 +401,13 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             }
         });
 
+        remoteCheckBox.setText("RM");
+        remoteCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                remoteCheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -418,39 +426,38 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                                     .addComponent(spinSpeedLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(spinTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(layout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                         .addComponent(connectButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(remoteCheckBox)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(connectLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                                .addComponent(jLabel2)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(spinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel3)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(incrementComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(0, 13, Short.MAX_VALUE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(spinSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(incrementComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(runRampSequenceCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel11)
                                     .addComponent(jLabel16))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(rampStepTextField)
+                                    .addComponent(rampStepTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
                                     .addComponent(spinTimeTextField)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(saveRampButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
                                 .addComponent(loadRampButton))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(startButton)
@@ -471,7 +478,8 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(runRampSequenceCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(connectButton)
-                    .addComponent(connectLabel))
+                    .addComponent(connectLabel)
+                    .addComponent(remoteCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -692,11 +700,34 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
         if(stepperPhidget != null) {
             return;
         }
+        
         try {
             stepperPhidget = new Stepper();
+            int timeout = Phidget.DEFAULT_TIMEOUT;
             
-            System.out.println("Waiting for the Phidget Stepper to be attached...\n");
-            stepperPhidget.open(Phidget.DEFAULT_TIMEOUT);
+            // open dialog to connect to remote server
+            if(remoteCheckBox.isSelected()) {
+                String defaultServer = System.getProperty("phidget.server");
+                
+                if(defaultServer == null) {
+                    defaultServer = "pi3B, 192.168.1.14, 5661";
+                }
+                
+                String server = JOptionPane.showInputDialog(this, "Phidget Server", defaultServer);
+                if(server != null && !server.isEmpty()) {
+                    String[] info = server.split("\\s*,\\s*");
+                    int port = Integer.parseInt(info[2]);
+                    Net.addServer(info[0], info[1], port, "", 0);
+                    stepperPhidget.setIsRemote(true);
+                    timeout = 10000;
+                    
+                    // save this server information
+                    System.setProperty("phidget.server", server);
+                }
+            }
+            
+            System.out.println("Waiting for the Phidget Stepper to be attached ...\n");
+            stepperPhidget.open(timeout);
             
             // set the scaling factor and control mode to RUN 
             // so we are in continous rotation mode
@@ -737,6 +768,9 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             
             connectLabel.setText("Connection Failed ...");
             Logger.getLogger(SCKTalkPhiDesktop.class.getName()).log(Level.SEVERE, null, ex);
+            
+            // set this to null so we re-connect
+            stepperPhidget = null;
         }
     }//GEN-LAST:event_connectButtonActionPerformed
     
@@ -972,6 +1006,10 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
             rampProgramTextArea.setText(content);
         }
     }//GEN-LAST:event_loadRampButtonActionPerformed
+
+    private void remoteCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remoteCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_remoteCheckBoxActionPerformed
     
     /**
      * Given an RPM reading set the speed by converting to micro-steps per second
@@ -1029,6 +1067,7 @@ public class SCKTalkPhiDesktop extends javax.swing.JFrame {
     private javax.swing.JTextField maxSpinSpeedTextField;
     private javax.swing.JTextArea rampProgramTextArea;
     private javax.swing.JTextField rampStepTextField;
+    private javax.swing.JCheckBox remoteCheckBox;
     private javax.swing.JTextField rescaleFactorTextField;
     private javax.swing.JCheckBox runRampSequenceCheckBox;
     private javax.swing.JButton saveRampButton;
