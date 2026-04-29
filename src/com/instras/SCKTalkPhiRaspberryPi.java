@@ -67,11 +67,11 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     // this specifies how fast the motor should accelarate
     private double acceleration = 500; // rpms per sec
 
-    // the current limit of 1.0
-    private double currentLimit = 1.0;
+    // the current limit of 1.5
+    private double currentLimit = 1.5;
 
     // this sets how many seconds the motor should spin by default ( 5 min)
-    private int targetSpinTime = 300;
+    private int targetSpinTime = 3600;
 
     // The spin speed to set
     private int setSpeed = 0;
@@ -125,6 +125,9 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
                 updateSpinTime();
             }
         });
+        
+        // set the current limit textfield
+        currentLimitTextField.setText("" + df.format(currentLimit));
         
         // initialize the preferences object
         prefs = Preferences.userRoot().node(this.getClass().getName());
@@ -1195,7 +1198,7 @@ public class SCKTalkPhiRaspberryPi extends javax.swing.JPanel {
     private void loadPreferences() {
         directionComboBox.setSelectedIndex(prefs.getInt("direction", 0));
         //maxSpeedTextField.setText(prefs.get("maxSpeed", "8000"));
-        currentLimitTextField.setText(prefs.get("currentLimit", "1.0"));
+        currentLimitTextField.setText(prefs.get("currentLimit", df.format(currentLimit)));
         accTextField.setText(prefs.get("acceleration", "500"));
         ramp1SpeedTextField.setText(prefs.get("ramp1Speed", "500"));
         ramp1TimeTextField.setText(prefs.get("ramp1Time", "30"));
